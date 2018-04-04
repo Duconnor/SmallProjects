@@ -9,8 +9,8 @@
 class User :public BaseUser
 {
 private:
-	char userName[30];
-	char password[30];
+	char userName[MAXSIZE];
+	char password[MAXSIZE];
 	List<Goods> shoppingCart;
 public:
 	User(char *inputUserName, char *inputPassword)

@@ -6,12 +6,15 @@
 #include "list.h"
 #include <string.h>
 
+const int MAXIDSIZE = 10;
+const int MAXSIZE = 50;
+
 class Goods
 {
 private:
-	char ID[5];
-	char name[30];
-	char brand[30];
+	char ID[MAXIDSIZE];
+	char name[MAXSIZE];
+	char brand[MAXSIZE];
 	double price;
 	int number; // 商品的数量
 public:
@@ -37,7 +40,7 @@ public:
 class SoldGoods :public Goods
 {
 private:
-	char buyerName[30];
+	char buyerName[MAXSIZE];
 public:
 	SoldGoods() {};
 	SoldGoods(char *fileID, char *fileName, char *fileBrand, double filePrice, int fileNumber, char *buyerName)
@@ -61,8 +64,8 @@ public:
 	void writeGoodsList(char *fileName); // 将库存清单信息回写回文件
 	void writeSoldGoodsList(char *fileName); // 将售货清单信息回写回文件
 	Goods* searchByID(char *ID); // 通过ID号查询商品
-	List<Goods*> searchByName(char *name); // 通过名称查询商品
-	List<Goods*> searchByBrand(char *brand); // 通过品牌查询商品
+	List<Goods*>* searchByName(char *name); // 通过名称查询商品
+	List<Goods*>* searchByBrand(char *brand); // 通过品牌查询商品
 	void addNewGoods(Goods * newGoods); // 增加新的商品
 	void deleteGoods(Goods * goods); // 删除商品
 	void soldGoods(List<Goods> shoppingCart); // 支付购物车内的商品

@@ -38,9 +38,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="list.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="user.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -48,6 +45,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="warehouse.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="administration.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

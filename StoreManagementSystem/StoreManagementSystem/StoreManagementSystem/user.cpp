@@ -10,11 +10,11 @@ bool User::logIn(char * fileName)
 		printf("open file error\n");
 		return false;
 	}
-	char stdName[30], stdPassword[30];
+	char stdName[MAXSIZE], stdPassword[MAXSIZE];
 	while (true)
 	{
-		fscanf_s(file, "%s", stdName, 30);
-		fscanf_s(file, "%s", stdPassword, 30);
+		fscanf_s(file, "%s", stdName, MAXSIZE);
+		fscanf_s(file, "%s", stdPassword, MAXSIZE);
 		if (feof(file))
 			return false; // 该用户不存在
 		if (strcmp(userName, stdName) == 0)
@@ -36,9 +36,9 @@ void User::logOut()
 
 bool User::signIn(char * fileName)
 {
-	char newUserName[30], newPassword[30];
-	scanf_s("%s", newUserName, 30);
-	scanf_s("%s", newPassword, 30);
+	char newUserName[MAXSIZE], newPassword[MAXSIZE];
+	scanf_s("%s", newUserName, MAXSIZE);
+	scanf_s("%s", newPassword, MAXSIZE);
 	strcpy_s(userName, strlen(newUserName) + 1, newUserName);
 	strcpy_s(password, strlen(newPassword) + 1, newPassword);
 	FILE *file;

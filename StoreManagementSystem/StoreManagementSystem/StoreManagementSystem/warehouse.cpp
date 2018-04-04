@@ -1,35 +1,8 @@
 #include "warehouse.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include <Windows.h>
-
-char* U2G(const char* utf8)
-{
-	int len = MultiByteToWideChar(CP_UTF8, 0, utf8, -1, NULL, 0);
-	wchar_t* wstr = new wchar_t[len + 1];
-	memset(wstr, 0, len + 1);
-	MultiByteToWideChar(CP_UTF8, 0, utf8, -1, wstr, len);
-	len = WideCharToMultiByte(CP_ACP, 0, wstr, -1, NULL, 0, NULL, NULL);
-	char* str = new char[len + 1];
-	memset(str, 0, len + 1);
-	WideCharToMultiByte(CP_ACP, 0, wstr, -1, str, len, NULL, NULL);
-	if (wstr) delete[] wstr;
-	return str;
-}
-
-char* G2U(const char* gb2312)
-{
-	int len = MultiByteToWideChar(CP_ACP, 0, gb2312, -1, NULL, 0);
-	wchar_t* wstr = new wchar_t[len + 1];
-	memset(wstr, 0, len + 1);
-	MultiByteToWideChar(CP_ACP, 0, gb2312, -1, wstr, len);
-	len = WideCharToMultiByte(CP_UTF8, 0, wstr, -1, NULL, 0, NULL, NULL);
-	char* str = new char[len + 1];
-	memset(str, 0, len + 1);
-	WideCharToMultiByte(CP_UTF8, 0, wstr, -1, str, len, NULL, NULL);
-	if (wstr) delete[] wstr;
-	return str;
-}
+#include <iostream>
+#include <iomanip>
 
 WareHouse::WareHouse(char * fileName, char *fileName2)
 {
@@ -39,26 +12,26 @@ WareHouse::WareHouse(char * fileName, char *fileName2)
 		printf("open file error\n");
 		exit(-1);
 	}
-	char fileID[5];
-	char inputName[30];
-	char fileBrand[30];
+	char fileID[MAXIDSIZE];
+	char inputName[MAXSIZE];
+	char fileBrand[MAXSIZE];
 	double filePrice;
 	int fileNumber;
-	fscanf_s(file, "%s", inputName, 30);
-	fscanf_s(file, "%s", inputName, 30);
-	fscanf_s(file, "%s", inputName, 30);
-	fscanf_s(file, "%s", inputName, 30);
-	fscanf_s(file, "%s", inputName, 30);
+	fscanf_s(file, "%s", inputName, MAXSIZE);
+	fscanf_s(file, "%s", inputName, MAXSIZE);
+	fscanf_s(file, "%s", inputName, MAXSIZE);
+	fscanf_s(file, "%s", inputName, MAXSIZE);
+	fscanf_s(file, "%s", inputName, MAXSIZE);
 	while (true)
 	{
-		fscanf_s(file, "%s", fileID, 5);
+		fscanf_s(file, "%s", fileID, MAXIDSIZE);
 		if (feof(file))
 			break;
-		fscanf_s(file, "%s", inputName, 30);
-		fscanf_s(file, "%s", fileBrand, 30);
+		fscanf_s(file, "%s", inputName, MAXSIZE);
+		fscanf_s(file, "%s", fileBrand, MAXSIZE);
 		fscanf_s(file, "%lf", &filePrice);
 		fscanf_s(file, "%d", &fileNumber);
-		Goods *goods = new Goods(fileID, U2G(inputName), U2G(fileBrand), filePrice, fileNumber);
+		Goods *goods = new Goods(fileID, inputName, fileBrand, filePrice, fileNumber);
 		goodsList.insert(goods);
 	}
 	fclose(file);
@@ -67,24 +40,24 @@ WareHouse::WareHouse(char * fileName, char *fileName2)
 		printf("open file error\n");
 		exit(-1);
 	}
-	char fileBuyerName[30];
-	fscanf_s(file, "%s", inputName, 30);
-	fscanf_s(file, "%s", inputName, 30);
-	fscanf_s(file, "%s", inputName, 30);
-	fscanf_s(file, "%s", inputName, 30);
-	fscanf_s(file, "%s", inputName, 30);
-	fscanf_s(file, "%s", inputName, 30);
+	char fileBuyerName[MAXSIZE];
+	fscanf_s(file, "%s", inputName, MAXSIZE);
+	fscanf_s(file, "%s", inputName, MAXSIZE);
+	fscanf_s(file, "%s", inputName, MAXSIZE);
+	fscanf_s(file, "%s", inputName, MAXSIZE);
+	fscanf_s(file, "%s", inputName, MAXSIZE);
+	fscanf_s(file, "%s", inputName, MAXSIZE);
 	while (true)
 	{
-		fscanf_s(file, "%s", fileID, 5);
+		fscanf_s(file, "%s", fileID, MAXIDSIZE);
 		if (feof(file))
 			break;
-		fscanf_s(file, "%s", inputName, 30);
-		fscanf_s(file, "%s", fileBrand, 30);
+		fscanf_s(file, "%s", inputName, MAXSIZE);
+		fscanf_s(file, "%s", fileBrand, MAXSIZE);
 		fscanf_s(file, "%lf", &filePrice);
 		fscanf_s(file, "%d", &fileNumber);
-		fscanf_s(file, "%s", fileBuyerName, 30);
-		SoldGoods *goods = new SoldGoods(U2G(fileID), U2G(inputName), U2G(fileBrand), filePrice, fileNumber, U2G(fileBuyerName));
+		fscanf_s(file, "%s", fileBuyerName, MAXSIZE);
+		SoldGoods *goods = new SoldGoods(fileID, inputName, fileBrand, filePrice, fileNumber, fileBuyerName);
 		soldGoodsList.insert(goods);
 	}
 	fclose(file);
@@ -150,27 +123,31 @@ void WareHouse::writeSoldGoodsList(char * fileName)
 
 Goods * WareHouse::searchByID(char * ID)
 {
-	for (Goods* goods : goodsList)
+	Goods * result = nullptr;
+	for (auto goods : goodsList)
 		if (strcmp(goods->getID(), ID) == 0)
-			return goods;
-	return nullptr;
-}
-
-List<Goods*> WareHouse::searchByName(char * name)
-{
-	List<Goods*> result;
-	for (Goods* goods : goodsList)
-		if (strcmp(goods->getName(), name) == 0)
-			result.insert(goods);
+		{
+			result = goods;
+			break;
+		}
 	return result;
 }
 
-List<Goods*> WareHouse::searchByBrand(char * brand)
+List<Goods*>* WareHouse::searchByName(char * name)
 {
-	List<Goods*> result;
-	for (Goods* goods : goodsList)
+	List<Goods*> *result = new List<Goods*>;
+	for (auto goods : goodsList)
+		if (strcmp(goods->getName(), name) == 0)
+			(*result).insert(goods);
+	return result;
+}
+
+List<Goods*>* WareHouse::searchByBrand(char * brand)
+{
+	List<Goods*>* result = new List<Goods*>;
+	for (auto goods : goodsList)
 		if (strcmp(goods->getBrand(), brand) == 0)
-			result.insert(goods);
+			(*result).insert(goods);
 	return result;
 }
 
@@ -186,7 +163,7 @@ void WareHouse::deleteGoods(Goods * goods)
 
 void WareHouse::soldGoods(List<Goods> shoppingCart)
 {
-	for (Goods goods : shoppingCart)
+	for (auto goods : shoppingCart)
 	{
 		Goods *temp = searchByID(goods.getID());
 		temp->setNumber(temp->getNumber() - goods.getNumber());
@@ -207,27 +184,31 @@ void WareHouse::modifyGoodsNumber(Goods * goods, int newNumber)
 
 void WareHouse::getSoldGoodsList()
 {
-	printf("ID\t\t名称\t\t品牌\t\t价格\t\t数量\n");
-	for (SoldGoods* goods : soldGoodsList)
-		printf("%s\t\t%s\t\t%s\t\t%0.1lf\t\t%d\n", goods->getID(), goods->getName(), goods->getBrand(), goods->getPrice(), goods->getNumber());
+	std::cout << std::left << std::setw(16) << "ID" << std::setw(16) << "名称" << std::setw(16) << "品牌" << std::setw(16) << "价格" << std::setw(16) << "数量" << std::endl;
+	for (SoldGoods *goods : soldGoodsList)
+		std::cout << std::setw(16) << goods->getID() << std::setw(16) << goods->getName() << std::setw(16)
+		<< goods->getBrand() << std::setw(16) << std::setprecision(1) << goods->getPrice() << std::setw(16) << goods->getNumber() << std::endl;
 }
 
 void WareHouse::getGoodsList()
 {
-	printf("ID\t\t名称\t\t品牌\t\t价格\t\t数量\n");
-	for (Goods* goods : goodsList)
-		printf("%s\t\t%s\t\t%s\t\t%0.1lf\t\t%d\n", goods->getID(), goods->getName(), goods->getBrand(), goods->getPrice(), goods->getNumber());
+	std::cout << std::left << std::setw(16) << "ID" << std::setw(16) << "名称" << std::setw(16) << "品牌" << std::setw(16) << "价格" << std::setw(16) << "数量" << std::endl;
+	for (Goods *goods : goodsList)
+		std::cout << std::setw(16) << goods->getID() << std::setw(16) << goods->getName() << std::setw(16)
+		<< goods->getBrand() << std::setw(16) << std::setprecision(1) << goods->getPrice() << std::setw(16) << goods->getNumber() << std::endl;
 }
 
 
-#define TEST 1
+#define TEST 0
 #if TEST == 1
 
 int main()
 {
 	WareHouse warehouse("库存.txt", "已售清单.txt");
-	warehouse.getSoldGoodsList();
+//	warehouse.getSoldGoodsList();
 	warehouse.getGoodsList();
+	//Goods * goods = warehouse.searchByID("F0002");
+	//std::cout << goods->getName() << std::endl;
 	system("pause");
 	return 0;
 }
