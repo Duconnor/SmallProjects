@@ -8,6 +8,7 @@ bool Admin::logIn(char * fileName)
 
 void Admin::logOut()
 {
+	return;
 }
 
 

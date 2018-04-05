@@ -26,16 +26,16 @@ public:
 	int size() { return numberOfElementsInList; }
 	T* begin() { return list; };
 	T* end() { return list + numberOfElementsInList; }
-	T* get(int index); // 输入index返回该处的元素地址
-	T* operator[](int index); // 重载运算符
+	T get(int index); // 输入index返回该处的元素地址
+	T operator[](int index); // 重载运算符
 };
 
 template<class T>
-T * List<T>::get(int index)
+T List<T>::get(int index)
 {
 	if (index >= numberOfElementsInList)
 		return nullptr;
-	return &list[index];
+	return list[index];
 }
 
 template<class T>
@@ -49,12 +49,12 @@ void List<T>::remove(int index)
 }
 
 template<class T>
-T* List<T>::operator[](int index)
+T List<T>::operator[](int index)
 {
 	if (index >= numberOfElementsInList)
 		return nullptr;
 	else
-		return &list[index];
+		return list[index];
 }
 
 #endif // !SMS_LIST_H

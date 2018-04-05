@@ -27,11 +27,41 @@ bool User::logIn(char * fileName)
 		}
 	}
 	fclose(file);
+
+	err = fopen_s(&file, userName, "r");
+	if (err != 0)
+	{
+		printf("open file error\n");
+		return false;
+	}
+	char fileID[MAXIDSIZE];
+	char inputName[MAXSIZE];
+	char fileBrand[MAXSIZE];
+	double filePrice;
+	int fileNumber;
+	fscanf_s(file, "%s", inputName, MAXSIZE);
+	fscanf_s(file, "%s", inputName, MAXSIZE);
+	fscanf_s(file, "%s", inputName, MAXSIZE);
+	fscanf_s(file, "%s", inputName, MAXSIZE);
+	fscanf_s(file, "%s", inputName, MAXSIZE);
+	while (true)
+	{
+		fscanf_s(file, "%s", fileID, MAXIDSIZE);
+		if (feof(file))
+			break;
+		fscanf_s(file, "%s", inputName, MAXSIZE);
+		fscanf_s(file, "%s", fileBrand, MAXSIZE);
+		fscanf_s(file, "%lf", &filePrice);
+		fscanf_s(file, "%d", &fileNumber);
+		Goods *goods = new Goods(fileID, inputName, fileBrand, filePrice, fileNumber);
+		shoppingCart.insert(goods);
+	}
+	fclose(file);
 }
 
 void User::logOut()
 {
-
+	return;
 }
 
 bool User::signIn(char * fileName)
@@ -47,9 +77,20 @@ bool User::signIn(char * fileName)
 		printf("open file error\n");
 		return false;
 	}
-	fprintf(file, "\n");
 	fprintf(file, "%s\t", userName);
-	fprintf(file, "%s", password);
+	fprintf(file, "%s\n", password);
+	fclose(file);
+
+	// 为该用户创建购物车文本
+	char newFileName[MAXSIZE];
+	strcpy_s(newFileName, strlen(userName) + 1, userName);
+	strcat_s(newFileName, sizeof(newFileName), ".txt");
+	if (errno_t err = fopen_s(&file, newFileName, "w") != 0)
+	{
+		printf("open file error\n");
+		return false;
+	}
+	fclose(file);
 	return true;
 }
 

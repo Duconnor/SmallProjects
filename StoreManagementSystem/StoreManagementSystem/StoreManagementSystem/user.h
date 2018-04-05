@@ -11,7 +11,8 @@ class User :public BaseUser
 private:
 	char userName[MAXSIZE];
 	char password[MAXSIZE];
-	List<Goods> shoppingCart;
+public:
+	List<Goods*> shoppingCart;
 public:
 	User(char *inputUserName, char *inputPassword)
 	{

@@ -5,6 +5,8 @@
 
 #include "list.h"
 #include <string.h>
+#include <iostream>
+#include <iomanip>
 
 const int MAXIDSIZE = 10;
 const int MAXSIZE = 50;
@@ -25,6 +27,14 @@ public:
 		strcpy_s(name, strlen(fileName) + 1, fileName);
 		strcpy_s(brand, strlen(fileBrand) + 1, fileBrand);
 	}
+	Goods(Goods * goods)
+	{
+		price = goods->getPrice();
+		number = goods->getNumber();
+		strcpy_s(ID, strlen(goods->getID()) + 1, goods->getID());
+		strcpy_s(name, strlen(goods->getName()) + 1, goods->getName());
+		strcpy_s(brand, strlen(goods->getBrand()) + 1, goods->getBrand());
+	}
 	inline char* getID() { return ID; };
 	inline char* getName() { return name; };
 	inline char* getBrand() { return brand; };
@@ -35,6 +45,11 @@ public:
 	inline void setBrand(char *inputBrand) { strcpy_s(brand, strlen(inputBrand) + 1, inputBrand); }
 	inline void setPrice(double inputPrice) { price = inputPrice; }
 	inline void setNumber(int n) { number = n; }
+	void display()
+	{
+		std::cout << std::setw(16) << ID << std::setw(16) << name << std::setw(16)<< brand << std::setw(16) 
+			<< std::setiosflags(std::ios::fixed) << std::setprecision(1) << price << std::setw(16) << number << std::endl;
+	}
 };
 
 class SoldGoods :public Goods
@@ -66,9 +81,11 @@ public:
 	Goods* searchByID(char *ID); // 通过ID号查询商品
 	List<Goods*>* searchByName(char *name); // 通过名称查询商品
 	List<Goods*>* searchByBrand(char *brand); // 通过品牌查询商品
+	Goods* administrationSearch(Goods &goods); // 就算是商品数量为-1也会显示出来的管理员高级搜索
+	bool doesExist(char *name, char *brand); // 检查商品是否存在
 	void addNewGoods(Goods * newGoods); // 增加新的商品
 	void deleteGoods(Goods * goods); // 删除商品
-	void soldGoods(List<Goods> shoppingCart); // 支付购物车内的商品
+	void soldGoods(List<Goods*> shoppingCart); // 支付购物车内的商品
 	void modifyGoodsPrice(Goods * goods, double newPrice); // 修改一种商品的价格
 	void modifyGoodsNumber(Goods * goods, int newNumber); // 修改一种商品的数量
 	void getSoldGoodsList(); // 获取售货清单
