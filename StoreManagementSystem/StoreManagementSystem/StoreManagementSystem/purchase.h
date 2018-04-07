@@ -10,8 +10,12 @@ class Purchase
 private:
 	WareHouse* wares;
 	User * user;
+	char * fileNameForGoods;
+	char * fileNameForSoldGoods;
+	char * fileNameForCart;
 public:
 	Purchase(char *fileNameGoods,char * fileNameSoldGoods, char *fileNameCart, User * u);
+	~Purchase();
 	void showGoodsList();
 	Goods* searchForGoods(); // 在list中搜索商品
 	void addToShoppingCart(); // 添加一个或多个商品进购物车

@@ -81,14 +81,14 @@ void WareHouse::writeGoodsList(char * fileName)
 	fprintf(file, "名称\t");
 	fprintf(file, "品牌\t");
 	fprintf(file, "价格\t");
-	fprintf(file, "数量\t");
+	fprintf(file, "数量\n");
 	for (Goods* goods : goodsList)
 	{
 		fprintf(file, "%s\t", goods->getID());
 		fprintf(file, "%s\t", goods->getName());
 		fprintf(file, "%s\t", goods->getBrand());
 		fprintf(file, "%0.1lf\t", goods->getPrice());
-		fprintf(file, "%d\t", goods->getNumber());
+		fprintf(file, "%d\n", goods->getNumber());
 	}
 	fclose(file);
 }
@@ -200,14 +200,15 @@ void WareHouse::deleteGoods(Goods * goods)
 	goods->setNumber(-1);
 }
 
-void WareHouse::soldGoods(List<Goods*> shoppingCart)
+void WareHouse::soldGoods(List<Goods*> shoppingCart, char *buyerName)
 {
 	for (auto goods : shoppingCart)
 	{
 		Goods *temp = searchByID(goods->getID());
 		temp->setNumber(temp->getNumber() - goods->getNumber());
-		Goods *del = goods;
-		delete del;
+		SoldGoods * soldGoods = new SoldGoods(temp->getID(), temp->getName(),
+			temp->getBrand(), temp->getPrice(), goods->getNumber(), buyerName);
+		soldGoodsList.insert(soldGoods);
 	}
 }
 

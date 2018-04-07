@@ -3,6 +3,7 @@
 
 bool User::logIn(char * fileName)
 {
+	bool flag = false;
 	FILE *file;
 	errno_t err = fopen_s(&file, fileName, "r");
 	if (err != 0)
@@ -21,14 +22,20 @@ bool User::logIn(char * fileName)
 		{
 			// 找到了匹配的用户名
 			if (strcmp(password, stdPassword) == 0)
-				return true;
+			{
+				flag = true;
+				break;
+			}
 			else
 				return false; // 密码不匹配
 		}
 	}
 	fclose(file);
 
-	err = fopen_s(&file, userName, "r");
+	char cartFileName[MAXSIZE];
+	strcpy_s(cartFileName, strlen(userName) + 1, userName);
+	strcat_s(cartFileName, sizeof(cartFileName), ".txt");
+	err = fopen_s(&file, cartFileName, "r");
 	if (err != 0)
 	{
 		printf("open file error\n");
@@ -57,6 +64,7 @@ bool User::logIn(char * fileName)
 		shoppingCart.insert(goods);
 	}
 	fclose(file);
+	return flag;
 }
 
 void User::logOut()
@@ -90,6 +98,11 @@ bool User::signIn(char * fileName)
 		printf("open file error\n");
 		return false;
 	}
+	fprintf(file, "ID\t");
+	fprintf(file, "名称\t");
+	fprintf(file, "品牌\t");
+	fprintf(file, "价格\t");
+	fprintf(file, "数量\n");
 	fclose(file);
 	return true;
 }

@@ -50,6 +50,12 @@ public:
 		std::cout << std::setw(16) << ID << std::setw(16) << name << std::setw(16)<< brand << std::setw(16) 
 			<< std::setiosflags(std::ios::fixed) << std::setprecision(1) << price << std::setw(16) << number << std::endl;
 	}
+	inline bool operator ==(Goods& goods)
+	{
+		if (strcmp(ID, goods.getID()) == 0)
+			return true;
+		return false;
+	}
 };
 
 class SoldGoods :public Goods
@@ -85,7 +91,7 @@ public:
 	bool doesExist(char *name, char *brand); // 检查商品是否存在
 	void addNewGoods(Goods * newGoods); // 增加新的商品
 	void deleteGoods(Goods * goods); // 删除商品
-	void soldGoods(List<Goods*> shoppingCart); // 支付购物车内的商品
+	void soldGoods(List<Goods*> shoppingCart, char * buyerName); // 支付购物车内的商品
 	void modifyGoodsPrice(Goods * goods, double newPrice); // 修改一种商品的价格
 	void modifyGoodsNumber(Goods * goods, int newNumber); // 修改一种商品的数量
 	void getSoldGoodsList(); // 获取售货清单

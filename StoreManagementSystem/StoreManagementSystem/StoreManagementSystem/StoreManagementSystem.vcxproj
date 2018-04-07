@@ -122,6 +122,7 @@
   <ItemGroup>
     <ClCompile Include="admin.cpp" />
     <ClCompile Include="administration.cpp" />
+    <ClCompile Include="main.cpp" />
     <ClCompile Include="purchase.cpp" />
     <ClCompile Include="user.cpp" />
     <ClCompile Include="warehouse.cpp" />
