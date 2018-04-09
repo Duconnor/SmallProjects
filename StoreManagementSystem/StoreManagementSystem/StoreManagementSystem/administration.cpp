@@ -31,15 +31,21 @@ Goods * Administration::searchForGoods()
 	else if ((*searchList).size() == 1)
 	{
 		std::cout << "成功！" << std::endl;
+		char delim[] = { "*******************************************************************************************************" };
+		std::cout << delim << std::endl;
 		for (auto goods : *searchList)
 			goods->display();
+		std::cout << delim << std::endl;
 		return (searchList->get(0));
 	}
 	else
 	{
 		std::cout << "有超过一种的商品符合查询条件，如下所示" << std::endl;
+		char delim[] = { "*******************************************************************************************************" };
+		std::cout << delim << std::endl;
 		for (auto goods : *searchList)
 			goods->display();
+		std::cout << delim << std::endl;
 		std::cout << "请输入ID进行进一步的查询" << std::endl;
 		std::cin >> name;
 		Goods * searchGoods = wares->searchByID(name);
@@ -51,7 +57,9 @@ Goods * Administration::searchForGoods()
 		else
 		{
 			std::cout << "成功！" << std::endl;
+			std::cout << delim << std::endl;
 			searchGoods->display();
+			std::cout << delim << std::endl;
 			return searchGoods;
 		}
 	}
@@ -60,7 +68,9 @@ Goods * Administration::searchForGoods()
 void Administration::addNewGoods()
 {
 	std::cout << "请先输入新产品的名称和品牌，系统会进行检查，请以空格分隔，回车结束" << std::endl;
-	char inputBuffer[1000];
+	char * inputBuffer = new char[1000];
+	std::cin.clear();
+	std::cin.ignore(1024, '\n');
 	std::cin.getline(inputBuffer, 1000);
 	char *s = nullptr, *next = nullptr;
 	s = strtok_s(inputBuffer, " ", &next);

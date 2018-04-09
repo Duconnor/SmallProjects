@@ -74,11 +74,6 @@ void User::logOut()
 
 bool User::signIn(char * fileName)
 {
-	char newUserName[MAXSIZE], newPassword[MAXSIZE];
-	scanf_s("%s", newUserName, MAXSIZE);
-	scanf_s("%s", newPassword, MAXSIZE);
-	strcpy_s(userName, strlen(newUserName) + 1, newUserName);
-	strcpy_s(password, strlen(newPassword) + 1, newPassword);
 	FILE *file;
 	if (errno_t err = fopen_s(&file, fileName, "a") != 0)
 	{

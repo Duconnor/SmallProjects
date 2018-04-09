@@ -224,19 +224,25 @@ void WareHouse::modifyGoodsNumber(Goods * goods, int newNumber)
 
 void WareHouse::getSoldGoodsList()
 {
-	std::cout << std::left << std::setw(16) << "ID" << std::setw(16) << "名称" << std::setw(16) << "品牌" << std::setw(16) << "价格" << std::setw(16) << "数量" << std::endl;
+	char delim[] = { "*******************************************************************************************************" };
+	std::cout << delim << std::endl;
+	std::cout << std::left << std::setw(16) << "ID" << std::setw(16) << "名称" << std::setw(16) 
+		<< "品牌" << std::setw(16) << "价格" << std::setw(16) << "数量" << std::endl;
 	for (SoldGoods *goods : soldGoodsList)
 		goods->display();
+	std::cout << delim << std::endl;
 }
 
 void WareHouse::getGoodsList()
 {
-	std::cout << std::left << std::setw(16) << "ID" << std::setw(16) << "名称" << std::setw(16) << "品牌" << std::setw(16) << "价格" << std::setw(16) << "数量" << std::endl;
+	char delim[] = { "*******************************************************************************************************" };
+	std::cout << delim << std::endl;
+	std::cout << std::left << std::setw(16) << "ID" << std::setw(16) << "名称" << std::setw(16) << "品牌"
+		<< std::setw(16) << "价格" << std::setw(16) << "数量" << std::endl;
 	for (Goods *goods : goodsList)
-	{
 		if(goods->getNumber()!=-1)
 			goods->display();
-	}
+	std::cout << delim << std::endl;
 }
 
 

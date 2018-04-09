@@ -53,15 +53,21 @@ Goods * Purchase::searchForGoods()
 	else if ((*searchList).size() == 1)
 	{
 		std::cout << "成功！" << std::endl;
+		char delim[] = { "*******************************************************************************************************" };
+		std::cout << delim << std::endl;
 		for (auto goods : *searchList)
 			goods->display();
+		std::cout << delim << std::endl;
 		return (searchList->get(0));
 	}
 	else
 	{
 		std::cout << "有超过一种的商品符合查询条件，如下所示" << std::endl;
+		char delim[] = { "*******************************************************************************************************" };
+		std::cout << delim << std::endl;
 		for (auto goods : *searchList)
 			goods->display();
+		std::cout << delim << std::endl;
 		std::cout << "请输入ID进行进一步的查询" << std::endl;
 		std::cin >> name;
 		Goods * searchGoods = wares->searchByID(name);
@@ -73,7 +79,9 @@ Goods * Purchase::searchForGoods()
 		else
 		{
 			std::cout << "成功！" << std::endl;
+			std::cout << delim << std::endl;
 			searchGoods->display();
+			std::cout << delim << std::endl;
 			return searchGoods;
 		}
 	}
@@ -124,9 +132,12 @@ void Purchase::deleteGoodsInShoppingCart()
 	}
 	else
 	{
+		char delim[] = { "*******************************************************************************************************" };
 		std::cout << "有不止一件商品满足条件" << std::endl;
+		std::cout << delim << std::endl;
 		for (int i : indexList)
 			user->shoppingCart[i]->display();
+		std::cout << delim << std::endl;
 		std::cout << "请输入ID进一步查询" << std::endl;
 		char ID[MAXIDSIZE];
 		std::cin >> ID;
@@ -151,8 +162,11 @@ void Purchase::showShoppingCart()
 {
 	//for (auto goods : user->shoppingCart)
 	//	goods->display();
+	char delim[] = { "*******************************************************************************************************" };
+	std::cout << delim << std::endl;
 	for (int i = 0; i < user->shoppingCart.size(); i++)
 		user->shoppingCart[i]->display();
+	std::cout << delim << std::endl;
 }
 
 void Purchase::pay()
