@@ -10,10 +10,10 @@ Purchase::Purchase(char * fileNameGoods, char * fileNameSoldGoods,char * fileNam
 	{
 		Goods * goods = user->shoppingCart[i];
 		Goods * temp = wares->searchByID(goods->getID());
-		if (temp == nullptr || temp->getNumber() < goods->getNumber())
+		if (temp == nullptr)
 		{
 			// 该商品已被删除或数量小于购物车中的数量
-			std::cout << "商品" << goods->getName() << " " << goods->getBrand() << " 已下架或库存不足，已从购物车中为您删除" << std::endl;
+			std::cout << "商品" << goods->getName() << " " << goods->getBrand() << " 已下架，已从购物车中为您删除" << std::endl;
 			user->shoppingCart.remove(i);
 		}
 	}
@@ -101,10 +101,27 @@ void Purchase::addToShoppingCart()
 	Goods * goodsInCart = new Goods(goods);
 	goodsInCart->setNumber(number);
 	int i = 0;
+	bool addFlag = true;
 	for (; i < user->shoppingCart.size(); i++)
+	{
+		if (strcmp(user->shoppingCart[i]->getID(), goodsInCart->getID()) == 0)
+		{
+			if (user->shoppingCart[i]->getNumber() + goodsInCart->getNumber() > goods->getNumber())
+			{
+				std::cout << "没有足够的商品可供添加" << std::endl;
+				addFlag = false;
+				return;
+			}
+			user->shoppingCart[i]->setNumber(user->shoppingCart[i]->getNumber() + goodsInCart->getNumber());
+			delete goodsInCart;
+			addFlag = false;
+			break;
+		}
 		if (strcmp(user->shoppingCart[i]->getID(), goodsInCart->getID()) > 0)
 			break;
-	user->shoppingCart.insert(i, goodsInCart);
+	}
+	if(addFlag)
+		user->shoppingCart.insert(i, goodsInCart);
 	std::cout << "添加成功！已在购物车中等亲！" << std::endl;
 }
 
@@ -175,7 +192,15 @@ void Purchase::pay()
 	showShoppingCart();
 	double sum = 0.0;
 	for (auto goods : user->shoppingCart)
+	{
+		Goods * temp = wares->searchByID(goods->getID());
+		if (temp->getNumber() < goods->getNumber())
+		{
+			std::cout << "商品" << goods->getName() << " " << goods->getBrand() << " 库存不足" << std::endl;
+			continue;
+		}
 		sum += goods->getPrice();
+	}
 	std::cout << "一共需要支付" << sum << "元" << std::endl;
 	std::cout << "确认请输入1，取消请输入0" << std::endl;
 	int order = -1;
@@ -183,8 +208,12 @@ void Purchase::pay()
 	if (order)
 	{
 		wares->soldGoods(user->shoppingCart, user->getUserName());
-		user->shoppingCart.clear();
 		std::cout << "成功！" << std::endl;
+		std::cout << "是否需要帮您删除掉库存不足的物品，要删除请输入1，否则输入0" << std::endl;
+		int order2 = -1;
+		std::cin >> order2;
+		if(order2)
+			user->shoppingCart.clear();
 	}
 	else
 		std::cout << "操作取消！" << std::endl;

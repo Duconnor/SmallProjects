@@ -200,15 +200,27 @@ void WareHouse::deleteGoods(Goods * goods)
 	goods->setNumber(-1);
 }
 
-void WareHouse::soldGoods(List<Goods*> shoppingCart, char *buyerName)
+void WareHouse::soldGoods(List<Goods*> & shoppingCart, char *buyerName)
 {
-	for (auto goods : shoppingCart)
+	int count = 0, length = shoppingCart.size(), index = 0;
+	while(true)
 	{
+		if (count >= length)
+			break;
+		Goods * goods = shoppingCart[index];
 		Goods *temp = searchByID(goods->getID());
+		if (goods->getNumber() > temp->getNumber())
+		{
+			index++;
+			count++;
+			continue;
+		}
 		temp->setNumber(temp->getNumber() - goods->getNumber());
 		SoldGoods * soldGoods = new SoldGoods(temp->getID(), temp->getName(),
 			temp->getBrand(), temp->getPrice(), goods->getNumber(), buyerName);
 		soldGoodsList.insert(soldGoods);
+		shoppingCart.remove(index);
+		count++;
 	}
 }
 

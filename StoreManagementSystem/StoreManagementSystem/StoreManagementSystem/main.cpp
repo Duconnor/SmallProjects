@@ -31,7 +31,7 @@ void showAdministrationMenu()
 ============================================================" };
 	char delim2[] = { "	" };
 	std::cout << delim << std::endl;
-	std::cout << "1.注销登录" << delim2 << "2.查询商品" << delim2 << "3.增加商品" << delim2 << "4.删除商品" << delim2 << "5.修改商品数量" << delim2
+	std::cout << "1.注销登录" << delim2 << "2.查询商品" << delim2 << "3.增加商品" << delim2 << "4.删除商品" << delim2 << "5.修改商品信息" << delim2
 		<< "6.售货清单" << delim2 << "7.在售货物清单" << std::endl;
 	std::cout << delim << std::endl;
 }
