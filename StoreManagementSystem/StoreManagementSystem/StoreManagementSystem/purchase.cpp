@@ -191,12 +191,14 @@ void Purchase::pay()
 	std::cout << "您购物车中的商品有" << std::endl;
 	showShoppingCart();
 	double sum = 0.0;
+	bool notEnoughFlag = false;
 	for (auto goods : user->shoppingCart)
 	{
 		Goods * temp = wares->searchByID(goods->getID());
 		if (temp->getNumber() < goods->getNumber())
 		{
 			std::cout << "商品" << goods->getName() << " " << goods->getBrand() << " 库存不足" << std::endl;
+			notEnoughFlag = true;
 			continue;
 		}
 		sum += goods->getPrice();
@@ -209,11 +211,16 @@ void Purchase::pay()
 	{
 		wares->soldGoods(user->shoppingCart, user->getUserName());
 		std::cout << "成功！" << std::endl;
-		std::cout << "是否需要帮您删除掉库存不足的物品，要删除请输入1，否则输入0" << std::endl;
-		int order2 = -1;
-		std::cin >> order2;
-		if(order2)
+		if (!notEnoughFlag)
 			user->shoppingCart.clear();
+		else
+		{
+			std::cout << "是否需要帮您删除掉库存不足的物品，要删除请输入1，否则输入0" << std::endl;
+			int order2 = -1;
+			std::cin >> order2;
+			if (order2)
+				user->shoppingCart.clear();
+		}
 	}
 	else
 		std::cout << "操作取消！" << std::endl;
