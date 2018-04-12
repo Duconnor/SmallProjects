@@ -96,6 +96,7 @@ public:
 	void modifyGoodsNumber(Goods * goods, int newNumber); // 修改一种商品的数量
 	void getSoldGoodsList(); // 获取售货清单
 	void getGoodsList(); //获取商品清单
+	void getGoodsList(int x); // 用户界面获取商品信息
 };
 
 #endif // !SMS_WAREHOUSE_H

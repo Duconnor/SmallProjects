@@ -257,6 +257,20 @@ void WareHouse::getGoodsList()
 	std::cout << delim << std::endl;
 }
 
+void WareHouse::getGoodsList(int x)
+{
+	char delim[] = { "*******************************************************************************************************" };
+	std::cout << delim << std::endl;
+	std::cout << std::left << std::setw(16) << "ID" << std::setw(16) << "名称" << std::setw(16) << "品牌"
+		<< std::setw(16) << "价格" << std::setw(16) << "数量" << std::endl;
+	for (Goods *goods : goodsList)
+		if (goods->getNumber() != -1 && goods->getNumber() != 0)
+			goods->display();
+	std::cout << delim << std::endl;
+}
+
+
+
 
 #define TEST 0
 #if TEST == 1

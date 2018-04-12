@@ -36,7 +36,7 @@ Purchase::~Purchase()
 
 void Purchase::showGoodsList()
 {
-	wares->getGoodsList();
+	wares->getGoodsList(1);
 }
 
 Goods * Purchase::searchForGoods()
@@ -52,6 +52,11 @@ Goods * Purchase::searchForGoods()
 	}
 	else if ((*searchList).size() == 1)
 	{
+		if (searchList->get(0)->getNumber() == 0)
+		{
+			std::cout << "没有找到该物品" << std::endl;
+			return nullptr;
+		}
 		std::cout << "成功！" << std::endl;
 		char delim[] = { "*******************************************************************************************************" };
 		std::cout << delim << std::endl;
@@ -62,6 +67,12 @@ Goods * Purchase::searchForGoods()
 	}
 	else
 	{
+		for(auto goods:*searchList)
+			if (goods->getNumber() == 0)
+			{
+				std::cout << "没有找到该物品" << std::endl;
+				return nullptr;
+			}
 		std::cout << "有超过一种的商品符合查询条件，如下所示" << std::endl;
 		char delim[] = { "*******************************************************************************************************" };
 		std::cout << delim << std::endl;
@@ -90,6 +101,8 @@ Goods * Purchase::searchForGoods()
 void Purchase::addToShoppingCart()
 {
 	Goods * goods = searchForGoods();
+	if (goods == nullptr)
+		return;
 	int number = 0;
 	std::cout << "请输入要添加的商品个数" << std::endl;
 	std::cin >> number;
@@ -123,6 +136,8 @@ void Purchase::addToShoppingCart()
 	if(addFlag)
 		user->shoppingCart.insert(i, goodsInCart);
 	std::cout << "添加成功！已在购物车中等亲！" << std::endl;
+	std::cout << "购物车中的商品有" << std::endl;
+	showShoppingCart();
 }
 
 void Purchase::deleteGoodsInShoppingCart()
@@ -130,6 +145,9 @@ void Purchase::deleteGoodsInShoppingCart()
 	std::cout << "请输入要删除的商品名称" << std::endl;
 	char name[MAXSIZE];
 	std::cin >> name;
+	std::cout << "请输入要删除的商品数量" << std::endl;
+	int number = 0;
+	std::cin >> number;
 	List<int> indexList;
 	for (auto goods : user->shoppingCart)
 		if (strcmp(goods->getName(), name) == 0)
@@ -144,7 +162,15 @@ void Purchase::deleteGoodsInShoppingCart()
 	}
 	else if (indexList.size() == 1)
 	{
-		user->shoppingCart.remove(indexList[0]);
+		if (number == user->shoppingCart[indexList[0]]->getNumber())
+			user->shoppingCart.remove(indexList[0]);
+		else if (number < user->shoppingCart[indexList[0]]->getNumber())
+			user->shoppingCart[indexList[0]]->setNumber(user->shoppingCart[indexList[0]]->getNumber() - number);
+		else
+		{
+			std::cout << "删除数量超过购物车中该商品的数量，删除失败" << std::endl;
+			return;
+		}
 		std::cout << "删除成功！" << std::endl;
 	}
 	else
@@ -170,8 +196,18 @@ void Purchase::deleteGoodsInShoppingCart()
 			std::cout << "查询不成功" << std::endl;
 			return;
 		}
-		user->shoppingCart.remove(index);
+		if (number == user->shoppingCart[index]->getNumber())
+			user->shoppingCart.remove(index);
+		else if (number < user->shoppingCart[index]->getNumber())
+			user->shoppingCart[index]->setNumber(user->shoppingCart[index]->getNumber() - number);
+		else
+		{
+			std::cout << "删除数量超过购物车中该商品的数量，删除失败" << std::endl;
+			return;
+		}
 		std::cout << "删除成功！" << std::endl;
+		std::cout << "购物车中的商品有" << std::endl;
+		showShoppingCart();
 	}
 }
 
@@ -197,7 +233,7 @@ void Purchase::pay()
 		Goods * temp = wares->searchByID(goods->getID());
 		if (temp->getNumber() < goods->getNumber())
 		{
-			std::cout << "商品" << goods->getName() << " " << goods->getBrand() << " 库存不足" << std::endl;
+			std::cout << "商品 " << goods->getName() << " " << goods->getBrand() << " 库存不足" << std::endl;
 			notEnoughFlag = true;
 			continue;
 		}
