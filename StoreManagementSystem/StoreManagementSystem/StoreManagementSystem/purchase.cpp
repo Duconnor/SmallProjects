@@ -237,7 +237,7 @@ void Purchase::pay()
 			notEnoughFlag = true;
 			continue;
 		}
-		sum += goods->getPrice();
+		sum += (goods->getPrice())*goods->getNumber();
 	}
 	std::cout << "一共需要支付" << sum << "元" << std::endl;
 	std::cout << "确认请输入1，取消请输入0" << std::endl;

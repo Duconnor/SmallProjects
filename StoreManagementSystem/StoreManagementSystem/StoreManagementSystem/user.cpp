@@ -9,6 +9,7 @@ bool User::logIn(char * fileName)
 	if (err != 0)
 	{
 		printf("open file error\n");
+		fclose(file);
 		return false;
 	}
 	char stdName[MAXSIZE], stdPassword[MAXSIZE];
@@ -17,7 +18,10 @@ bool User::logIn(char * fileName)
 		fscanf_s(file, "%s", stdName, MAXSIZE);
 		fscanf_s(file, "%s", stdPassword, MAXSIZE);
 		if (feof(file))
+		{
+			fclose(file);
 			return false; // 该用户不存在
+		}
 		if (strcmp(userName, stdName) == 0)
 		{
 			// 找到了匹配的用户名
@@ -27,7 +31,10 @@ bool User::logIn(char * fileName)
 				break;
 			}
 			else
+			{
+				fclose(file);
 				return false; // 密码不匹配
+			}
 		}
 	}
 	fclose(file);
@@ -39,6 +46,7 @@ bool User::logIn(char * fileName)
 	if (err != 0)
 	{
 		printf("open file error\n");
+		fclose(file);
 		return false;
 	}
 	char fileID[MAXIDSIZE];
@@ -78,6 +86,7 @@ bool User::signIn(char * fileName)
 	if (errno_t err = fopen_s(&file, fileName, "a") != 0)
 	{
 		printf("open file error\n");
+		fclose(file);
 		return false;
 	}
 	fprintf(file, "%s\t", userName);
@@ -91,6 +100,7 @@ bool User::signIn(char * fileName)
 	if (errno_t err = fopen_s(&file, newFileName, "w") != 0)
 	{
 		printf("open file error\n");
+		fclose(file);
 		return false;
 	}
 	fprintf(file, "ID\t");

@@ -27,7 +27,7 @@ public:
 	T* begin() { return list; };
 	T* end() { return list + numberOfElementsInList; }
 	T get(int index); // 输入index返回该处的元素地址
-	T operator[](int index); // 重载运算符
+	T & operator[](int index); // 重载运算符
 	int getIndex(T x);
 };
 
@@ -62,7 +62,7 @@ void List<T>::remove(int index)
 }
 
 template<class T>
-T List<T>::operator[](int index)
+T & List<T>::operator[](int index)
 {
 	if (index >= numberOfElementsInList)
 		return list[numberOfElementsInList - 1];

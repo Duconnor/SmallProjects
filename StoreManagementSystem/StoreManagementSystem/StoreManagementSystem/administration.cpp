@@ -89,7 +89,7 @@ void Administration::addNewGoods()
 	double price;
 	int number;
 	std::cin >> price >> number;
-	price = (double)((int)price * 10 + 0.5) / 10;
+	price = (double)((int)((price * 10) + 0.5)) / 10.0;
 	Goods * newGoods = new Goods("", name, brand, price, number);
 	wares->addNewGoods(newGoods);
 	std::cout << "Ìí¼Ó³É¹¦" << std::endl;

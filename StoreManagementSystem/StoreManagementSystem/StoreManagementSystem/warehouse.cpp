@@ -187,10 +187,16 @@ void WareHouse::addNewGoods(Goods * newGoods)
 	int nextID = atoi(ID) + 1;
 	int length = strlen(ID);
 	ID[0] = 'F';
-	for (int i = 1; i < length; i++)
-		ID[i] = '0';
-	ID[length] = nextID + '0';
-	ID[length + 1] = '\0';
+	if (nextID / 10000 != 0)
+		std::cout << "添加失败，库存内商品过多！" << std::endl;
+	int index = 1;
+	while (index <= 4)
+	{
+		ID[index] = (nextID / (int)pow(10, 4 - index)) + '0';
+		nextID = nextID % (int)pow(10, 4 - index);
+		index++;
+	}
+	ID[5] = '\0';
 	newGoods->setID(ID);
 	goodsList.insert(newGoods);
 }
@@ -236,11 +242,36 @@ void WareHouse::modifyGoodsNumber(Goods * goods, int newNumber)
 
 void WareHouse::getSoldGoodsList()
 {
+	List<SoldGoods *> tempList;
+	for (SoldGoods *goods : soldGoodsList)
+		tempList.insert(goods);
+	int length = tempList.size();
+	// 合并相同ID和价格的商品
+	for (int i = 0; i < length; i++)
+		for (int j = i + 1; j < length; j++)
+			if (strcmp(tempList[j]->getID(), tempList[i]->getID()) == 0 && tempList[j]->getPrice() == tempList[i]->getPrice())
+			{
+				tempList[i]->setNumber(tempList[j]->getNumber() + tempList[i]->getNumber());
+				tempList.remove(j);
+				j--;
+				length--;
+			}
+	// 按照ID升序排列
+	for (int i = 1; i < length; i++)
+	{
+		int j = i - 1;
+		while (j >= 0 && strcmp(tempList[j]->getID(), tempList[i]->getID()) > 0)
+		{
+			SoldGoods * temp = tempList[j];
+			tempList[j] = tempList[i];
+			tempList[i] = temp;
+		}
+	}
 	char delim[] = { "*******************************************************************************************************" };
 	std::cout << delim << std::endl;
 	std::cout << std::left << std::setw(16) << "ID" << std::setw(16) << "名称" << std::setw(16) 
 		<< "品牌" << std::setw(16) << "价格" << std::setw(16) << "数量" << std::endl;
-	for (SoldGoods *goods : soldGoodsList)
+	for (auto goods : tempList)
 		goods->display();
 	std::cout << delim << std::endl;
 }
