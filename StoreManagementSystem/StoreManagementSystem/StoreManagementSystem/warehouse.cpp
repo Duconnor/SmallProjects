@@ -300,6 +300,40 @@ void WareHouse::getGoodsList(int x)
 	std::cout << delim << std::endl;
 }
 
+void WareHouse::undoAdd(undoObject * undo)
+{
+	int index = -1;
+	for (auto goods : goodsList)
+		if (strcmp(goods->getName(), undo->getName()) == 0 && strcmp(goods->getBrand(), undo->getBrand()) == 0)
+			index = goodsList.getIndex(goods);
+	if (index == -1)
+		return;
+	goodsList.remove(index);
+}
+
+void WareHouse::undoDelete(undoObject * undo)
+{
+	for (auto goods : goodsList)
+		if (strcmp(undo->getName(), goods->getName()) == 0 && strcmp(undo->getBrand(), goods->getBrand()) == 0)
+		{
+			goods->setNumber(undo->getNumber());
+			break;
+		}
+}
+
+void WareHouse::undoModify(undoObject * undo)
+{
+	for (auto goods : goodsList)
+		if (strcmp(undo->getName(), goods->getName()) == 0 && strcmp(undo->getBrand(), goods->getBrand()) == 0)
+		{
+			if (undo->getType() == numberLess || undo->getType() == numberPlus)
+				goods->setNumber(undo->getNumber());
+			else if (undo->getType() == priceLess || undo->getType() == pricePlus)
+				goods->setPrice(undo->getPrice());
+			break;
+		}
+}
+
 
 
 

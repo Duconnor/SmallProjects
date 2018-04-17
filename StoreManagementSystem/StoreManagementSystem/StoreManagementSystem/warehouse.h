@@ -73,6 +73,42 @@ public:
 	inline void setBuyerName(char *name) { strcpy_s(buyerName, strlen(name) + 1, name); }
 };
 
+enum TYPE { removal, add, numberLess, numberPlus, priceLess, pricePlus };
+
+class undoObject : public Goods
+{
+private:
+	TYPE type;
+	int index; // 添加或者删除的物品原本的位置
+public:
+	undoObject() { index = -1; };
+	undoObject(Goods * goods)
+	{
+		this->setID(goods->getID());
+		this->setName(goods->getName());
+		this->setBrand(goods->getBrand());
+		this->setNumber(goods->getNumber());
+		this->setPrice(goods->getPrice());
+		index = -1;
+	}
+	int getType() { return type; };
+	int getIndex() { return index; };
+	void setType(int type)
+	{
+		switch (type)
+		{
+		case 0: this->type = removal; break;
+		case 1:this->type = add; break;
+		case 2:this->type = numberLess; break;
+		case 3:this->type = numberPlus; break;
+		case 4:this->type = priceLess; break;
+		case 5:this->type = pricePlus; break;
+		default:break;
+		}
+	};
+	void setIndex(int index) { this->index = index; };
+};
+
 
 class WareHouse
 {
@@ -97,6 +133,9 @@ public:
 	void getSoldGoodsList(); // 获取售货清单
 	void getGoodsList(); //获取商品清单
 	void getGoodsList(int x); // 用户界面获取商品信息
+	void undoAdd(undoObject * undo); // 撤销添加操作
+	void undoDelete(undoObject * undo); // 撤销删除操作
+	void undoModify(undoObject * undo); // 撤销修改商品信息操作
 };
 
 #endif // !SMS_WAREHOUSE_H

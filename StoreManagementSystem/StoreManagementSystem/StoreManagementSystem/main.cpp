@@ -21,18 +21,18 @@ void showPurchaseMenu()
 	char delim2[] = { "	" };
 	std::cout << delim << std::endl;
 	std::cout << "0.撤销上一步操作" << delim2 << "1.注销登录" << delim2 << "2.查看商品" << delim2 << "3.商品搜索" << delim2 << "4.添加商品至购物车" << delim2
-		<< "5.删除购物车商品" << delim2 << "6.查看购物车" << delim2 << "7.结账"<<delim2<<"8.修改密码" << std::endl;
+		<< "5.删除购物车商品" << delim2 << "6.查看购物车" << delim2 << "7.结账"<<delim2<<"8.修改密码"<< std::endl;
 	std::cout << delim << std::endl;
 }
 
 void showAdministrationMenu()
 {
-	char delim[] = { "===================================================\
+	char delim[] = { "================================================================================\
 =========================================================================================" };
 	char delim2[] = { "	" };
 	std::cout << delim << std::endl;
-	std::cout << "1.注销登录" << delim2 << "2.查询商品" << delim2 << "3.增加商品" << delim2 << "4.删除商品" << delim2 << "5.修改商品信息" << delim2
-		<< "6.售货清单" << delim2 << "7.在售货物清单" <<delim2<<"8.注册用户信息"<<delim2<<"9.重置用户密码"<< std::endl;
+	std::cout << "0.撤销上一步操作" << delim2 << "1.注销登录" << delim2 << "2.查询商品" << delim2 << "3.增加商品" << delim2 << "4.删除商品" << delim2 << "5.修改商品信息" << delim2
+		<< "6.售货清单" << delim2 << "7.在售货物清单" << delim2 << "8.注册用户信息" << delim2 << "9.重置用户密码" << std::endl;
 	std::cout << delim << std::endl;
 }
 
@@ -167,6 +167,7 @@ void applicationOn()
 				std::cin >> order;
 				switch (order)
 				{
+				case 0:adminInterface.undo(); break;
 				case 1:adminInterface.logOut(); break;
 				case 2:adminInterface.searchForGoods(); break;
 				case 3:adminInterface.addNewGoods(); break;

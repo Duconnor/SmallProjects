@@ -34,7 +34,7 @@ Purchase::~Purchase()
 	delete fileNameForSoldGoods;
 	while (!undoStack.empty())
 	{
-		undoObejct * temp = undoStack.top();
+		undoObject * temp = undoStack.top();
 		undoStack.pop();
 		delete temp;
 	}
@@ -120,7 +120,7 @@ Goods * Purchase::searchForGoods(bool flag = false)
 void Purchase::addToShoppingCart()
 {
 	Goods * goods = searchForGoods();
-	undoObejct * undoGoods = nullptr;
+	undoObject * undoGoods = nullptr;
 	if (goods == nullptr)
 		return;
 	int number = 0;
@@ -145,7 +145,7 @@ void Purchase::addToShoppingCart()
 				addFlag = false;
 				return;
 			}
-			undoGoods = new undoObejct(user->shoppingCart[i]);
+			undoGoods = new undoObject(user->shoppingCart[i]);
 			undoGoods->setIndex(i);
 			undoGoods->setType(3);
 			user->shoppingCart[i]->setNumber(user->shoppingCart[i]->getNumber() + goodsInCart->getNumber());
@@ -158,7 +158,7 @@ void Purchase::addToShoppingCart()
 	}
 	if (addFlag)
 	{
-		undoGoods = new undoObejct(goodsInCart);
+		undoGoods = new undoObject(goodsInCart);
 		undoGoods->setIndex(i);
 		undoGoods->setType(1);
 		user->shoppingCart.insert(i, goodsInCart);
@@ -171,7 +171,7 @@ void Purchase::addToShoppingCart()
 
 void Purchase::deleteGoodsInShoppingCart()
 {
-	undoObejct * undoGoods = nullptr;
+	undoObject * undoGoods = nullptr;
 	std::cout << "请输入要删除的商品名称" << std::endl;
 	char name[MAXSIZE];
 	std::cin >> name;
@@ -194,14 +194,14 @@ void Purchase::deleteGoodsInShoppingCart()
 	{
 		if (number == user->shoppingCart[indexList[0]]->getNumber())
 		{
-			undoGoods = new undoObejct(user->shoppingCart[indexList[0]]);
+			undoGoods = new undoObject(user->shoppingCart[indexList[0]]);
 			undoGoods->setIndex(indexList[0]);
 			undoGoods->setType(0);
 			user->shoppingCart.remove(indexList[0]);
 		}
 		else if (number < user->shoppingCart[indexList[0]]->getNumber())
 		{
-			undoGoods = new undoObejct(user->shoppingCart[indexList[0]]);
+			undoGoods = new undoObject(user->shoppingCart[indexList[0]]);
 			undoGoods->setIndex(indexList[0]);
 			undoGoods->setType(2);
 			user->shoppingCart[indexList[0]]->setNumber(user->shoppingCart[indexList[0]]->getNumber() - number);
@@ -241,14 +241,14 @@ void Purchase::deleteGoodsInShoppingCart()
 		}
 		if (number == user->shoppingCart[index]->getNumber())
 		{
-			undoGoods = new undoObejct(user->shoppingCart[index]);
+			undoGoods = new undoObject(user->shoppingCart[index]);
 			undoGoods->setIndex(index);
 			undoGoods->setType(0);
 			user->shoppingCart.remove(index);
 		}
 		else if (number < user->shoppingCart[index]->getNumber())
 		{
-			undoGoods = new undoObejct(user->shoppingCart[index]);
+			undoGoods = new undoObject(user->shoppingCart[index]);
 			undoGoods->setIndex(index);
 			undoGoods->setType(2);
 			user->shoppingCart[index]->setNumber(user->shoppingCart[index]->getNumber() - number);
@@ -370,7 +370,7 @@ void Purchase::undo()
 		std::cout << "没有步骤可撤销" << std::endl;
 		return;
 	}
-	undoObejct * undo = undoStack.top();
+	undoObject * undo = undoStack.top();
 	undoStack.pop();
 	if (undo->getType() == removal)
 	{

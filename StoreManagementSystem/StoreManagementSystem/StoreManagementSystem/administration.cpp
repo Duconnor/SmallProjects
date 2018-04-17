@@ -16,6 +16,12 @@ Administration::~Administration()
 	delete fileNameForGoods;
 	delete fileNameForSoldGoods;
 	delete wares;
+	while (!undoStack.empty())
+	{
+		undoObject * temp = undoStack.top();
+		delete temp;
+		undoStack.pop();
+	}
 }
 
 Goods * Administration::searchForGoods()
@@ -93,6 +99,9 @@ void Administration::addNewGoods()
 	std::cin >> price >> number;
 	price = (double)((int)((price * 10) + 0.5)) / 10.0;
 	Goods * newGoods = new Goods("", name, brand, price, number);
+	undoObject * undo = new undoObject(newGoods);
+	undo->setType(1);
+	undoStack.push(undo);
 	wares->addNewGoods(newGoods);
 	std::cout << "添加成功" << std::endl;
 }
@@ -100,13 +109,18 @@ void Administration::addNewGoods()
 void Administration::deleteGoods()
 {
 	Goods * deleteGoods = searchForGoods();
+	undoObject * undo = new undoObject(deleteGoods);
+	undo->setType(0);
 	wares->deleteGoods(deleteGoods);
 	std::cout << "删除成功" << std::endl;
+	undoStack.push(undo);
 }
 
 void Administration::modifyGoodsInformation()
 {
+	undoObject * undo = nullptr;
 	Goods * goods = searchForGoods();
+	undo = new undoObject(goods);
 	std::cout << "请输入需要修改的信息类型，1代表修改价格，2代表修改数量" << std::endl;
 	int order = 0;
 	std::cin >> order;
@@ -115,6 +129,15 @@ void Administration::modifyGoodsInformation()
 		std::cout << "请输入修改后的价格" << std::endl;
 		double price = 0.0;
 		std::cin >> price;
+		if (price > goods->getPrice())
+			undo->setType(5);
+		else if (price < goods->getPrice())
+			undo->setType(4);
+		else
+		{
+			std::cout << "没有检测到修改" << std::endl;
+			return;
+		}
 		wares->modifyGoodsPrice(goods, price);
 		std::cout << "修改成功！" << std::endl;
 	}
@@ -128,9 +151,19 @@ void Administration::modifyGoodsInformation()
 			std::cout << "修改失败，数量不能为负" << std::endl;
 			return;
 		}
+		if (number > goods->getNumber())
+			undo->setType(3);
+		else if (number < goods->getNumber())
+			undo->setType(2);
+		else
+		{
+			std::cout << "没有检测到修改" << std::endl;
+			return;
+		}
 		wares->modifyGoodsNumber(goods, number);
 		std::cout << "修改成功！" << std::endl;
 	}
+	undoStack.push(undo);
 }
 
 void Administration::showSoldList()
@@ -210,6 +243,49 @@ void Administration::setPasswordToDefault()
 }
 	fclose(file);
 	return;
+}
+
+void Administration::undo()
+{
+	if (undoStack.empty())
+	{
+		std::cout << "没有步骤可供撤销" << std::endl;
+		return;
+	}
+	undoObject * undo = undoStack.top();
+	undoStack.pop();
+	if (undo->getType() == add)
+	{
+		std::cout << "添加" << undo->getName() << "的操作被撤销" << std::endl;
+		wares->undoAdd(undo);
+	}
+	else if (undo->getType() == removal)
+	{
+		std::cout << "删除" << undo->getName() << "的操作被撤销" << std::endl;
+		wares->undoDelete(undo);
+	}
+	else if (undo->getType() == numberPlus)
+	{
+		std::cout << "增加" << undo->getName() << "数量的操作被撤销" << std::endl;
+		wares->undoModify(undo);
+	}
+	else if (undo->getType() == numberLess)
+	{
+		std::cout << "减少" << undo->getName() << "数量的操作被撤销" << std::endl;
+		wares->undoModify(undo);
+	}
+	else if (undo->getType() == priceLess)
+	{
+		std::cout << "减少" << undo->getName() << "售价的操作被撤销" << std::endl;
+		wares->undoModify(undo);
+	}
+	else if (undo->getType() == pricePlus)
+	{
+		std::cout << "增加" << undo->getName() << "售价的操作被撤销" << std::endl;
+		wares->undoModify(undo);
+	}
+	std::cout << "在售货物清单为" << std::endl;
+	showGoodList();
 }
 
 
