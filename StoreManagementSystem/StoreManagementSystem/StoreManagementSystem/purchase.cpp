@@ -32,6 +32,12 @@ Purchase::~Purchase()
 	delete fileNameForGoods;
 	delete fileNameForCart;
 	delete fileNameForSoldGoods;
+	while (!undoStack.empty())
+	{
+		undoObejct * temp = undoStack.top();
+		undoStack.pop();
+		delete temp;
+	}
 }
 
 void Purchase::showGoodsList()
@@ -114,6 +120,7 @@ Goods * Purchase::searchForGoods(bool flag = false)
 void Purchase::addToShoppingCart()
 {
 	Goods * goods = searchForGoods();
+	undoObejct * undoGoods = nullptr;
 	if (goods == nullptr)
 		return;
 	int number = 0;
@@ -138,6 +145,9 @@ void Purchase::addToShoppingCart()
 				addFlag = false;
 				return;
 			}
+			undoGoods = new undoObejct(user->shoppingCart[i]);
+			undoGoods->setIndex(i);
+			undoGoods->setType(3);
 			user->shoppingCart[i]->setNumber(user->shoppingCart[i]->getNumber() + goodsInCart->getNumber());
 			delete goodsInCart;
 			addFlag = false;
@@ -146,8 +156,14 @@ void Purchase::addToShoppingCart()
 		if (strcmp(user->shoppingCart[i]->getID(), goodsInCart->getID()) > 0)
 			break;
 	}
-	if(addFlag)
+	if (addFlag)
+	{
+		undoGoods = new undoObejct(goodsInCart);
+		undoGoods->setIndex(i);
+		undoGoods->setType(1);
 		user->shoppingCart.insert(i, goodsInCart);
+	}
+	undoStack.push(undoGoods);
 	std::cout << "添加成功！已在购物车中等亲！" << std::endl;
 	std::cout << "购物车中的商品有" << std::endl;
 	showShoppingCart();
@@ -155,6 +171,7 @@ void Purchase::addToShoppingCart()
 
 void Purchase::deleteGoodsInShoppingCart()
 {
+	undoObejct * undoGoods = nullptr;
 	std::cout << "请输入要删除的商品名称" << std::endl;
 	char name[MAXSIZE];
 	std::cin >> name;
@@ -176,15 +193,28 @@ void Purchase::deleteGoodsInShoppingCart()
 	else if (indexList.size() == 1)
 	{
 		if (number == user->shoppingCart[indexList[0]]->getNumber())
+		{
+			undoGoods = new undoObejct(user->shoppingCart[indexList[0]]);
+			undoGoods->setIndex(indexList[0]);
+			undoGoods->setType(0);
 			user->shoppingCart.remove(indexList[0]);
+		}
 		else if (number < user->shoppingCart[indexList[0]]->getNumber())
+		{
+			undoGoods = new undoObejct(user->shoppingCart[indexList[0]]);
+			undoGoods->setIndex(indexList[0]);
+			undoGoods->setType(2);
 			user->shoppingCart[indexList[0]]->setNumber(user->shoppingCart[indexList[0]]->getNumber() - number);
+		}
 		else
 		{
 			std::cout << "删除数量超过购物车中该商品的数量，删除失败" << std::endl;
 			return;
 		}
+		undoStack.push(undoGoods);
 		std::cout << "删除成功！" << std::endl;
+		std::cout << "购物车中的商品有" << std::endl;
+		showShoppingCart();
 	}
 	else
 	{
@@ -210,14 +240,25 @@ void Purchase::deleteGoodsInShoppingCart()
 			return;
 		}
 		if (number == user->shoppingCart[index]->getNumber())
+		{
+			undoGoods = new undoObejct(user->shoppingCart[index]);
+			undoGoods->setIndex(index);
+			undoGoods->setType(0);
 			user->shoppingCart.remove(index);
+		}
 		else if (number < user->shoppingCart[index]->getNumber())
+		{
+			undoGoods = new undoObejct(user->shoppingCart[index]);
+			undoGoods->setIndex(index);
+			undoGoods->setType(2);
 			user->shoppingCart[index]->setNumber(user->shoppingCart[index]->getNumber() - number);
+		}
 		else
 		{
 			std::cout << "删除数量超过购物车中该商品的数量，删除失败" << std::endl;
 			return;
 		}
+		undoStack.push(undoGoods);
 		std::cout << "删除成功！" << std::endl;
 		std::cout << "购物车中的商品有" << std::endl;
 		showShoppingCart();
@@ -279,6 +320,8 @@ void Purchase::pay()
 	}
 	else
 		std::cout << "操作取消！" << std::endl;
+	std::cout << "购物车中的商品有" << std::endl;
+	showShoppingCart();
 }
 
 void Purchase::logOut()
@@ -318,6 +361,48 @@ void Purchase::revisePassword()
 		std::cout << "成功！" << std::endl;
 	else
 		std::cout << "失败！" << std::endl;
+}
+
+void Purchase::undo()
+{
+	if (undoStack.empty())
+	{
+		std::cout << "没有步骤可撤销" << std::endl;
+		return;
+	}
+	undoObejct * undo = undoStack.top();
+	undoStack.pop();
+	if (undo->getType() == removal)
+	{
+		// 该商品原来的操作是删除
+		Goods * undoGoods = new Goods;
+		undoGoods->setBrand(undo->getBrand());
+		undoGoods->setID(undo->getID());
+		undoGoods->setName(undo->getName());
+		undoGoods->setNumber(undo->getNumber());
+		undoGoods->setPrice(undo->getPrice());
+		std::cout << "删除" << undo->getName()<<"的操作被撤销" << std::endl;
+		user->shoppingCart.insert(undo->getIndex(), undoGoods);
+	}
+	else if (undo->getType() == add)
+	{
+		std::cout << "添加" << undo->getName() << "的操作被撤销" << std::endl;
+		user->shoppingCart.remove(undo->getIndex());
+	}
+	else if (undo->getType() == numberLess)
+	{
+		std::cout << "删除" << undo->getNumber() - user->shoppingCart[undo->getIndex()]->getNumber() <<
+			"件" << undo->getName() << "的操作被撤销" << std::endl;
+		user->shoppingCart[undo->getIndex()]->setNumber(undo->getNumber());
+	}
+	else if (undo->getType() == numberPlus)
+	{
+		std::cout << "增加" << user->shoppingCart[undo->getIndex()]->getNumber() - undo->getNumber() <<
+			"件" << undo->getName() << "的操作被撤销" << std::endl;
+		user->shoppingCart[undo->getIndex()]->setNumber(undo->getNumber());
+	}
+	std::cout << "购物车中的商品有" << std::endl;
+	showShoppingCart();
 }
 
 #define TEST 0

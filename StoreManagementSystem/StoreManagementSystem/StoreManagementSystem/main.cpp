@@ -16,19 +16,19 @@ void showLogMenu()
 void showPurchaseMenu()
 {
 	// 客户界面的菜单
-	char delim[] = { "=====================================================\
+	char delim[] = { "=================================================================\
 =========================================================================================" };
 	char delim2[] = { "	" };
 	std::cout << delim << std::endl;
-	std::cout << "0.更改密码" << delim2 << "1.注销登录" << delim2 << "2.查看商品" << delim2 << "3.商品搜索" << delim2 << "4.添加商品至购物车" << delim2
-		<< "5.删除购物车商品" << delim2 << "6.查看购物车" << delim2 << "7.结账" << std::endl;
+	std::cout << "0.撤销上一步操作" << delim2 << "1.注销登录" << delim2 << "2.查看商品" << delim2 << "3.商品搜索" << delim2 << "4.添加商品至购物车" << delim2
+		<< "5.删除购物车商品" << delim2 << "6.查看购物车" << delim2 << "7.结账"<<delim2<<"8.修改密码" << std::endl;
 	std::cout << delim << std::endl;
 }
 
 void showAdministrationMenu()
 {
 	char delim[] = { "===================================================\
-====================================================================================" };
+=========================================================================================" };
 	char delim2[] = { "	" };
 	std::cout << delim << std::endl;
 	std::cout << "1.注销登录" << delim2 << "2.查询商品" << delim2 << "3.增加商品" << delim2 << "4.删除商品" << delim2 << "5.修改商品信息" << delim2
@@ -142,7 +142,7 @@ void applicationOn()
 				std::cin >> order;
 				switch (order)
 				{
-				case 0:userInterface.revisePassword(); break;
+				case 0:userInterface.undo(); break;
 				case 1:userInterface.logOut(); break;
 				case 2:userInterface.showGoodsList(); break;
 				case 3:userInterface.searchForGoods(true); break;
@@ -150,6 +150,7 @@ void applicationOn()
 				case 5:userInterface.deleteGoodsInShoppingCart(); break;
 				case 6:userInterface.showShoppingCart(); break;
 				case 7:userInterface.pay(); break;
+				case 8:userInterface.revisePassword(); break;
 				default:break;
 				}
 			}

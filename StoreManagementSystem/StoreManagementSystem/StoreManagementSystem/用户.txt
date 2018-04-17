@@ -1,6 +1,6 @@
 ÓÃ»§Ãû	ÃÜÂë
-user1	user1
-user2	passworduser2
+user1	passworduser1
+ser2	passworduser2
 user3	passworduser3
 user4	passworduser4
 user5	passworduser5
