@@ -11,8 +11,9 @@ private:
 	WareHouse *wares;
 	char * fileNameForGoods;
 	char * fileNameForSoldGoods;
+	char * fileNameForUser;
 public:
-	Administration(char *fileName, char *fileName2);
+	Administration(char *fileName, char *fileName2,char *fileName3);
 	~Administration();
 	Goods* searchForGoods(); // 查询特定的商品（先用商品名，不能确定则可以选择用ID或者进一步利用牌子）
 	void addNewGoods();
@@ -21,6 +22,8 @@ public:
 	void showSoldList();
 	void showGoodList();
 	void logOut();
+	void showAllUser(); // 新增功能：管理员可以看到已注册的用户信息
+	void setPasswordToDefault(); // 新增功能：管理员可以帮助用户重置密码
 };
 
 #endif // !SMS_ADMINISTRATION_H

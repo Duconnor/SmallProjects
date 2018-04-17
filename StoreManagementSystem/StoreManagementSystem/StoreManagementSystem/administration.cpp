@@ -1,12 +1,14 @@
 #include "administration.h"
 
-Administration::Administration(char * fileName, char *fileName2)
+Administration::Administration(char * fileName, char *fileName2,char *fileName3)
 {
 	wares = new WareHouse(fileName, fileName2);
 	fileNameForGoods = new char[MAXSIZE];
 	fileNameForSoldGoods = new char[MAXSIZE];
+	fileNameForUser = new char[MAXSIZE];
 	strcpy_s(fileNameForGoods, strlen(fileName) + 1, fileName);
 	strcpy_s(fileNameForSoldGoods, strlen(fileName2) + 1, fileName2);
+	strcpy_s(fileNameForUser, strlen(fileName3) + 1, fileName3);
 }
 
 Administration::~Administration()
@@ -145,6 +147,69 @@ void Administration::logOut()
 {
 	wares->writeGoodsList(fileNameForGoods);
 	wares->writeSoldGoodsList(fileNameForSoldGoods);
+}
+
+void Administration::showAllUser()
+{
+	char delim[] = { "*******************************************************************************************************" };
+	std::cout << delim << std::endl;
+	std::cout << "已注册用户如下" << std::endl;
+	FILE * file;
+	errno_t err = fopen_s(&file, fileNameForUser, "r");
+	if (err != 0)
+	{
+		std::cout << "open file error!" << std::endl;
+		fclose(file);
+		return;
+	}
+	char userName[MAXSIZE], userPassword[MAXSIZE];
+	while (true)
+	{
+		fscanf_s(file, "%s", userName, MAXSIZE);
+		fscanf_s(file, "%s", userPassword, MAXSIZE);
+		if (feof(file))
+			break;
+		std::cout << userName << std::endl;
+	}
+	std::cout << delim << std::endl;
+	fclose(file);
+}
+
+void Administration::setPasswordToDefault()
+{
+	char userName[MAXSIZE];
+	std::cout << "请输入要修改的用户的用户名" << std::endl;
+	std::cin >> userName;
+	FILE *file;
+	errno_t err = fopen_s(&file, fileNameForUser, "r+");
+	if (err != 0)
+	{
+		printf("open file error\n");
+		fclose(file);
+		return;
+	}
+	char stdName[MAXSIZE], stdPassword[MAXSIZE];
+	while (true)
+	{
+		fscanf_s(file, "%s", stdName, MAXSIZE);
+		fscanf_s(file, "%s", stdPassword, MAXSIZE);
+		if (feof(file))
+		{
+			fclose(file);
+			std::cout << "没有此用户！" << std::endl;
+			return; // 该用户不存在
+		}
+		if (strcmp(userName, stdName) == 0)
+		{
+			// 找到了匹配的用户名
+			fseek(file, -(int)strlen(stdPassword), SEEK_CUR);
+			fprintf(file, "666666\n");
+			std::cout << "成功！" << std::endl;
+			break;
+	}
+}
+	fclose(file);
+	return;
 }
 
 

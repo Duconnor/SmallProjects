@@ -17,12 +17,13 @@ public:
 	Purchase(char *fileNameGoods,char * fileNameSoldGoods, char *fileNameCart, User * u);
 	~Purchase();
 	void showGoodsList();
-	Goods* searchForGoods(); // 在list中搜索商品
+	Goods* searchForGoods(bool flag); // 在list中搜索商品
 	void addToShoppingCart(); // 添加一个或多个商品进购物车
 	void deleteGoodsInShoppingCart(); // 在购物车中删除商品
 	void showShoppingCart(); // 展示购物车中的商品
 	void pay(); // 支付
 	void logOut();
+	void revisePassword();
 };
 
 #endif // !SMS_PURCHASE_H

@@ -1,6 +1,35 @@
 #include "user.h"
 #include <stdio.h>
 
+bool User::doseExist(char * userName, char *fileName)
+{
+	FILE * file;
+	errno_t err = fopen_s(&file, fileName, "r");
+	if (err != 0)
+	{
+		std::cout << "open file error!" << std::endl;
+		fclose(file);
+		return false;
+	}
+	char name[MAXSIZE], password[MAXSIZE];
+	while (true)
+	{
+		fscanf_s(file, "%s", name, MAXSIZE);
+		fscanf_s(file, "%s", password, MAXSIZE);
+		if (feof(file))
+		{
+			fclose(file);
+			return false;
+		}
+		if (strcmp(name, userName) == 0)
+		{
+			fclose(file);
+			return true;
+		}
+	}
+	return false;
+}
+
 bool User::logIn(char * fileName)
 {
 	bool flag = false;
@@ -82,6 +111,11 @@ void User::logOut()
 
 bool User::signIn(char * fileName)
 {
+	if (doseExist(userName, fileName))
+	{
+		std::cout << "用户名被占用！" << std::endl;
+		return false;
+	}
 	FILE *file;
 	if (errno_t err = fopen_s(&file, fileName, "a") != 0)
 	{
@@ -110,6 +144,46 @@ bool User::signIn(char * fileName)
 	fprintf(file, "数量\n");
 	fclose(file);
 	return true;
+}
+
+bool User::revisePassword(char * newPassword, char * fileName)
+{
+	bool flag = false;
+	strcpy_s(password, strlen(newPassword) + 1, newPassword);
+	FILE *file, *fileTemp;
+	errno_t err = fopen_s(&file, fileName, "r+");
+	errno_t errTemp = fopen_s(&fileTemp, "temp.txt", "w");
+	if (err != 0 || errTemp != 0)
+	{
+		printf("open file error\n");
+		fclose(file);
+		return false;
+	}
+	char stdName[MAXSIZE], stdPassword[MAXSIZE];
+	while (true)
+	{
+		fscanf_s(file, "%s", stdName, MAXSIZE);
+		fscanf_s(file, "%s", stdPassword, MAXSIZE);
+		if (feof(file))
+		{
+			fclose(file);
+			break;
+		}
+		fprintf(fileTemp, "%s\t", stdName);
+		if (strcmp(userName, stdName) == 0)
+		{
+			// 找到了匹配的用户名
+			fprintf(fileTemp, "%s\n", newPassword);
+			flag = true;
+		}
+		else
+			fprintf(fileTemp, "%s\n", stdPassword);
+	}
+	fclose(fileTemp);
+	fclose(file);
+	remove(fileName);
+	rename("temp.txt", "用户.txt");
+	return flag;
 }
 
 

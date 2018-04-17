@@ -9,30 +9,30 @@ void showLogMenu()
 	char delim[] = { "===============================================" };
 	std::cout << delim << std::endl;
 	char delim2[] = { "	" };
-	std::cout << "1.用户登录" << delim2 << "2.用户注册" << delim2 << "3.管理员登录" << std::endl;
+	std::cout << "1.用户登录" << delim2 << "2.用户注册" << delim2 << "3.管理员登录"<< std::endl;
 	std::cout << delim << std::endl;
 }
 
 void showPurchaseMenu()
 {
 	// 客户界面的菜单
-	char delim[] = { "================================================\
-======================================================================" };
+	char delim[] = { "=====================================================\
+=========================================================================================" };
 	char delim2[] = { "	" };
 	std::cout << delim << std::endl;
-	std::cout << "1.注销登录" << delim2 << "2.查看商品" << delim2 << "3.商品搜索" << delim2 << "4.添加商品至购物车" << delim2
+	std::cout << "0.更改密码" << delim2 << "1.注销登录" << delim2 << "2.查看商品" << delim2 << "3.商品搜索" << delim2 << "4.添加商品至购物车" << delim2
 		<< "5.删除购物车商品" << delim2 << "6.查看购物车" << delim2 << "7.结账" << std::endl;
 	std::cout << delim << std::endl;
 }
 
 void showAdministrationMenu()
 {
-	char delim[] = { "================================================\
-============================================================" };
+	char delim[] = { "===================================================\
+====================================================================================" };
 	char delim2[] = { "	" };
 	std::cout << delim << std::endl;
 	std::cout << "1.注销登录" << delim2 << "2.查询商品" << delim2 << "3.增加商品" << delim2 << "4.删除商品" << delim2 << "5.修改商品信息" << delim2
-		<< "6.售货清单" << delim2 << "7.在售货物清单" << std::endl;
+		<< "6.售货清单" << delim2 << "7.在售货物清单" <<delim2<<"8.注册用户信息"<<delim2<<"9.重置用户密码"<< std::endl;
 	std::cout << delim << std::endl;
 }
 
@@ -42,6 +42,7 @@ void applicationOn()
 	{
 		char fileNameGoods[] = { "库存.txt" };
 		char fileNameSoldGoods[] = { "已售清单.txt" };
+		char fileNameUser[] = { "用户.txt" };
 		User * user = nullptr;
 		Admin * admin = nullptr;
 		showLogMenu();
@@ -60,7 +61,7 @@ void applicationOn()
 			std::cout << "输入密码：";
 			std::cin >> password;
 			user = new User(name, password);
-			if (user->logIn("用户.txt"))
+			if (user->logIn(fileNameUser))
 			{
 				std::cout << "********" << std::endl;
 				std::cout << "登录成功！" << std::endl;
@@ -84,7 +85,7 @@ void applicationOn()
 			std::cout << "输入密码：";
 			std::cin >> password;
 			user = new User(name, password);
-			if (user->signIn("用户.txt"))
+			if (user->signIn(fileNameUser))
 			{
 				std::cout << "****************" << std::endl;
 				std::cout << "注册成功！登录成功！" << std::endl;
@@ -137,13 +138,14 @@ void applicationOn()
 			while (order != 1)
 			{
 				showPurchaseMenu();
-				std::cout << "输入操作：";
+				std::cout<<user->getUserName() << " 请输入操作：";
 				std::cin >> order;
 				switch (order)
 				{
+				case 0:userInterface.revisePassword(); break;
 				case 1:userInterface.logOut(); break;
 				case 2:userInterface.showGoodsList(); break;
-				case 3:userInterface.searchForGoods(); break;
+				case 3:userInterface.searchForGoods(true); break;
 				case 4:userInterface.addToShoppingCart(); break;
 				case 5:userInterface.deleteGoodsInShoppingCart(); break;
 				case 6:userInterface.showShoppingCart(); break;
@@ -155,12 +157,12 @@ void applicationOn()
 		}
 		if (flagAdmin)
 		{
-			Administration adminInterface(fileNameGoods, fileNameSoldGoods);
+			Administration adminInterface(fileNameGoods, fileNameSoldGoods, fileNameUser);
 			order = -1;
 			while (order != 1)
 			{
 				showAdministrationMenu();
-				std::cout << "输入操作：";
+				std::cout << "管理员 请输入操作：";
 				std::cin >> order;
 				switch (order)
 				{
@@ -171,6 +173,8 @@ void applicationOn()
 				case 5:adminInterface.modifyGoodsInformation(); break;
 				case 6:adminInterface.showSoldList(); break;
 				case 7:adminInterface.showGoodList(); break;
+				case 8:adminInterface.showAllUser(); break;
+				case 9:adminInterface.setPasswordToDefault(); break;
 				default:break;
 				}
 			}
@@ -184,3 +188,5 @@ int main()
 	applicationOn();
 	system("pause");
 }
+
+// 新增功能：显示当前登录的用户名称

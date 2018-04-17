@@ -39,8 +39,21 @@ void Purchase::showGoodsList()
 	wares->getGoodsList(1);
 }
 
-Goods * Purchase::searchForGoods()
+// 增加搜索到物品后可直接添加到购物车功能
+Goods * Purchase::searchForGoods(bool flag = false)
 {
+	// flag如果为true则为单独调用，否则为其它功能调用（此时禁用直接添加功能）
+	if (flag)
+	{
+		std::cout << "是否需要在搜索成功时将物品添加进购物车，是请输入1，否则请输入0：";
+		int order = -1;
+		std::cin >> order;
+		if (order == 1)
+		{
+			addToShoppingCart();
+			return nullptr;
+		}
+	}
 	std::cout << "请输入商品名" << std::endl;
 	char name[MAXSIZE];
 	std::cin >> name;
@@ -211,15 +224,21 @@ void Purchase::deleteGoodsInShoppingCart()
 	}
 }
 
+// 增加在展示购物车时同时展示购物车内商品总价格的功能
 void Purchase::showShoppingCart()
 {
 	//for (auto goods : user->shoppingCart)
 	//	goods->display();
 	char delim[] = { "*******************************************************************************************************" };
 	std::cout << delim << std::endl;
+	double sum = 0.0;
 	for (int i = 0; i < user->shoppingCart.size(); i++)
+	{
 		user->shoppingCart[i]->display();
+		sum += (user->shoppingCart[i]->getPrice()*user->shoppingCart[i]->getNumber());
+	}
 	std::cout << delim << std::endl;
+	std::cout << "总金额为：" << sum << std::endl;
 }
 
 void Purchase::pay()
@@ -287,6 +306,18 @@ void Purchase::logOut()
 		fprintf(file, "%d\n", goods->getNumber());
 	}
 	fclose(file);
+}
+
+void Purchase::revisePassword()
+{
+	std::cout << "请输入新密码: ";
+	char newPassword[MAXSIZE];
+	std::cin >> newPassword;
+	bool flag = user->revisePassword(newPassword, "用户.txt");
+	if (flag)
+		std::cout << "成功！" << std::endl;
+	else
+		std::cout << "失败！" << std::endl;
 }
 
 #define TEST 0
