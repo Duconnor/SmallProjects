@@ -36,6 +36,9 @@
     <ClInclude Include="purchase.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="md5.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="user.cpp">
@@ -54,6 +57,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="md5.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

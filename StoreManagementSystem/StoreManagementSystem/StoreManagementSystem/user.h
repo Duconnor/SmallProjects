@@ -15,7 +15,7 @@ private:
 public:
 	List<Goods*> shoppingCart;
 public:
-	User(char *inputUserName, char *inputPassword)
+	User(const char *inputUserName,const char *inputPassword)
 	{
 		strcpy_s(userName, strlen(inputUserName) + 1, inputUserName);
 		strcpy_s(password, strlen(inputPassword) + 1, inputPassword);
@@ -24,7 +24,7 @@ public:
 	bool logIn(char *fileName); // 登录成功的同时从文件中读取购物车信息
 	void logOut();
 	bool signIn(char *fileName); // 新增功能：注册时检测用户是否已经存在
-	bool revisePassword(char * newPassword, char * fileName); // 新增功能：用户可以修改自己的密码
+	bool revisePassword(const char * newPassword, char * fileName); // 新增功能：用户可以修改自己的密码
 };
 
 #endif // !SMS_USER_H

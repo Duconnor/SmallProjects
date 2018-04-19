@@ -3,6 +3,8 @@
 #include "administration.h"
 #include "purchase.h"
 #include "admin.h"
+#include "md5.h"
+#include <string>
 
 void showLogMenu()
 {
@@ -60,7 +62,9 @@ void applicationOn()
 			std::cin >> name;
 			std::cout << "ÊäÈëÃÜÂë£º";
 			std::cin >> password;
-			user = new User(name, password);
+			MD5 md5(password);
+			string s = md5.toStr();
+			user = new User(name, s.c_str());
 			if (user->logIn(fileNameUser))
 			{
 				std::cout << "********" << std::endl;
@@ -84,7 +88,9 @@ void applicationOn()
 			std::cin >> name;
 			std::cout << "ÊäÈëÃÜÂë£º";
 			std::cin >> password;
-			user = new User(name, password);
+			MD5 md5(password);
+			string s = md5.toStr();
+			user = new User(name, s.c_str());
 			if (user->signIn(fileNameUser))
 			{
 				std::cout << "****************" << std::endl;

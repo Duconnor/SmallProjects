@@ -1,5 +1,7 @@
 #include "purchase.h"
+#include "md5.h"
 #include <algorithm>
+#include <string>
 
 Purchase::Purchase(char * fileNameGoods, char * fileNameSoldGoods,char * fileNameCart, User * u)
 {
@@ -86,17 +88,32 @@ Goods * Purchase::searchForGoods(bool flag = false)
 	}
 	else
 	{
+		int count = 0;
 		for(auto goods:*searchList)
 			if (goods->getNumber() == 0)
-			{
-				std::cout << "没有找到该物品" << std::endl;
-				return nullptr;
-			}
+				count++;
+		if (count == searchList->size())
+		{
+			std::cout << "没有找到对应商品" << std::endl;
+			return nullptr;
+		}
+		if (count == searchList->size() - 1)
+		{
+			std::cout << "成功！" << std::endl;
+			char delim[] = { "*******************************************************************************************************" };
+			std::cout << delim << std::endl;
+			for (auto goods : *searchList)
+				if (goods->getNumber() != 0)
+					goods->display();
+			std::cout << delim << std::endl;
+			return (searchList->get(0));
+		}
 		std::cout << "有超过一种的商品符合查询条件，如下所示" << std::endl;
 		char delim[] = { "*******************************************************************************************************" };
 		std::cout << delim << std::endl;
 		for (auto goods : *searchList)
-			goods->display();
+			if(goods->getNumber()!=0)
+				goods->display();
 		std::cout << delim << std::endl;
 		std::cout << "请输入ID进行进一步的查询" << std::endl;
 		std::cin >> name;
@@ -356,7 +373,9 @@ void Purchase::revisePassword()
 	std::cout << "请输入新密码: ";
 	char newPassword[MAXSIZE];
 	std::cin >> newPassword;
-	bool flag = user->revisePassword(newPassword, "用户.txt");
+	MD5 md5(newPassword);
+	string s = md5.toStr();
+	bool flag = user->revisePassword(s.c_str(), "用户.txt");
 	if (flag)
 		std::cout << "成功！" << std::endl;
 	else

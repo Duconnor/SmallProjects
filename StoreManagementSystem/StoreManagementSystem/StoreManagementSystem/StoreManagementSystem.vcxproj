@@ -115,6 +115,7 @@
     <ClInclude Include="administration.h" />
     <ClInclude Include="baseuser.h" />
     <ClInclude Include="list.h" />
+    <ClInclude Include="md5.h" />
     <ClInclude Include="purchase.h" />
     <ClInclude Include="user.h" />
     <ClInclude Include="warehouse.h" />
@@ -123,6 +124,7 @@
     <ClCompile Include="admin.cpp" />
     <ClCompile Include="administration.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="md5.cpp" />
     <ClCompile Include="purchase.cpp" />
     <ClCompile Include="user.cpp" />
     <ClCompile Include="warehouse.cpp" />

@@ -97,7 +97,7 @@ void Administration::addNewGoods()
 	double price;
 	int number;
 	std::cin >> price >> number;
-	price = (double)((int)((price * 10) + 0.5)) / 10.0;
+	price = (double)round(price * 10) / 10.0;
 	Goods * newGoods = new Goods("", name, brand, price, number);
 	undoObject * undo = new undoObject(newGoods);
 	undo->setType(1);
@@ -109,6 +109,8 @@ void Administration::addNewGoods()
 void Administration::deleteGoods()
 {
 	Goods * deleteGoods = searchForGoods();
+	if (deleteGoods == nullptr)
+		return;
 	undoObject * undo = new undoObject(deleteGoods);
 	undo->setType(0);
 	wares->deleteGoods(deleteGoods);
@@ -120,6 +122,8 @@ void Administration::modifyGoodsInformation()
 {
 	undoObject * undo = nullptr;
 	Goods * goods = searchForGoods();
+	if (goods == nullptr)
+		return;
 	undo = new undoObject(goods);
 	std::cout << "请输入需要修改的信息类型，1代表修改价格，2代表修改数量" << std::endl;
 	int order = 0;
@@ -129,6 +133,7 @@ void Administration::modifyGoodsInformation()
 		std::cout << "请输入修改后的价格" << std::endl;
 		double price = 0.0;
 		std::cin >> price;
+		price = (double)round(price * 10.0) / 10.0;
 		if (price > goods->getPrice())
 			undo->setType(5);
 		else if (price < goods->getPrice())
@@ -211,11 +216,13 @@ void Administration::showAllUser()
 void Administration::setPasswordToDefault()
 {
 	char userName[MAXSIZE];
+	bool flag = false;
 	std::cout << "请输入要修改的用户的用户名" << std::endl;
 	std::cin >> userName;
-	FILE *file;
-	errno_t err = fopen_s(&file, fileNameForUser, "r+");
-	if (err != 0)
+	FILE *file, *temp;
+	errno_t err = fopen_s(&file, fileNameForUser, "r");
+	errno_t err2 = fopen_s(&temp, "temp.txt", "w");
+	if (err != 0 || err2 != 0)
 	{
 		printf("open file error\n");
 		fclose(file);
@@ -227,21 +234,25 @@ void Administration::setPasswordToDefault()
 		fscanf_s(file, "%s", stdName, MAXSIZE);
 		fscanf_s(file, "%s", stdPassword, MAXSIZE);
 		if (feof(file))
-		{
-			fclose(file);
-			std::cout << "没有此用户！" << std::endl;
-			return; // 该用户不存在
-		}
+			break;
+		fprintf(temp, "%s\t", stdName);
 		if (strcmp(userName, stdName) == 0)
 		{
 			// 找到了匹配的用户名
-			fseek(file, -(int)strlen(stdPassword), SEEK_CUR);
-			fprintf(file, "666666\n");
-			std::cout << "成功！" << std::endl;
-			break;
+			fprintf(temp, "666666\n");
+			flag = true;
+		}
+		else
+			fprintf(temp, "%s\n", stdPassword);
 	}
-}
 	fclose(file);
+	fclose(temp);
+	remove(fileNameForUser);
+	rename("temp.txt", fileNameForUser);
+	if (flag)
+		std::cout << "成功！" << std::endl;
+	else
+		std::cout << "没有找到该用户！" << std::endl;
 	return;
 }
 

@@ -1,5 +1,7 @@
 #include "user.h"
+#include "md5.h"
 #include <stdio.h>
+#include <string>
 
 bool User::doseExist(char * userName, char *fileName)
 {
@@ -54,7 +56,9 @@ bool User::logIn(char * fileName)
 		if (strcmp(userName, stdName) == 0)
 		{
 			// 找到了匹配的用户名
-			if (strcmp(password, stdPassword) == 0)
+			MD5 md5(stdPassword);
+			string temp = md5.toStr();
+			if (strcmp(password, stdPassword) == 0 || strcmp(password, temp.c_str()) == 0)
 			{
 				flag = true;
 				break;
@@ -146,12 +150,12 @@ bool User::signIn(char * fileName)
 	return true;
 }
 
-bool User::revisePassword(char * newPassword, char * fileName)
+bool User::revisePassword(const char * newPassword, char * fileName)
 {
 	bool flag = false;
 	strcpy_s(password, strlen(newPassword) + 1, newPassword);
 	FILE *file, *fileTemp;
-	errno_t err = fopen_s(&file, fileName, "r+");
+	errno_t err = fopen_s(&file, fileName, "r");
 	errno_t errTemp = fopen_s(&fileTemp, "temp.txt", "w");
 	if (err != 0 || errTemp != 0)
 	{
@@ -165,10 +169,7 @@ bool User::revisePassword(char * newPassword, char * fileName)
 		fscanf_s(file, "%s", stdName, MAXSIZE);
 		fscanf_s(file, "%s", stdPassword, MAXSIZE);
 		if (feof(file))
-		{
-			fclose(file);
 			break;
-		}
 		fprintf(fileTemp, "%s\t", stdName);
 		if (strcmp(userName, stdName) == 0)
 		{

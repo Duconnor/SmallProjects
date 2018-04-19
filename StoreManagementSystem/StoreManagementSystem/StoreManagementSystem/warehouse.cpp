@@ -232,7 +232,7 @@ void WareHouse::soldGoods(List<Goods*> & shoppingCart, char *buyerName)
 
 void WareHouse::modifyGoodsPrice(Goods * goods, double newPrice)
 {
-	goods->setPrice((double)((int)newPrice * 10 + 0.5) / 10.0);
+	goods->setPrice(newPrice);
 }
 
 void WareHouse::modifyGoodsNumber(Goods * goods, int newNumber)
@@ -259,12 +259,13 @@ void WareHouse::getSoldGoodsList()
 	// ∞¥’’ID…˝–Ú≈≈¡–
 	for (int i = 1; i < length; i++)
 	{
-		int j = i - 1;
-		while (j >= 0 && strcmp(tempList[j]->getID(), tempList[i]->getID()) > 0)
+		int j = i ;
+		while (j > 0 && strcmp(tempList[j - 1]->getID(), tempList[j]->getID()) > 0)
 		{
 			SoldGoods * temp = tempList[j];
-			tempList[j] = tempList[i];
-			tempList[i] = temp;
+			tempList[j] = tempList[j-1];
+			tempList[j - 1] = temp;
+			j--;
 		}
 	}
 	char delim[] = { "*******************************************************************************************************" };
