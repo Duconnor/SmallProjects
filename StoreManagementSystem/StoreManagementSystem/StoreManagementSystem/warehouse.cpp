@@ -244,9 +244,12 @@ void WareHouse::modifyGoodsNumber(Goods * goods, int newNumber)
 
 void WareHouse::getSoldGoodsList()
 {
-	List<SoldGoods *> tempList;
+	List<SoldGoods*> tempList;
 	for (SoldGoods *goods : soldGoodsList)
-		tempList.insert(goods);
+	{
+		SoldGoods * sold = new SoldGoods(*goods);
+		tempList.insert(sold);
+	}
 	int length = tempList.size();
 	// 合并相同ID和价格的商品
 	for (int i = 0; i < length; i++)
@@ -277,6 +280,8 @@ void WareHouse::getSoldGoodsList()
 	for (auto goods : tempList)
 		goods->display();
 	std::cout << delim << std::endl;
+	for (auto goods : tempList)
+		delete goods;
 }
 
 void WareHouse::getGoodsList()

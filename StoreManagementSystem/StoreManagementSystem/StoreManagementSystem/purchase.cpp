@@ -303,12 +303,12 @@ void Purchase::showShoppingCart()
 		sum += (user->shoppingCart[i]->getPrice()*user->shoppingCart[i]->getNumber());
 	}
 	std::cout << delim << std::endl;
-	if (user->isVIP())
+	if (user->isVIP() && user->shoppingCart.size() != 0)
 	{
 		std::cout << "您是VIP用户，已为您进行了优惠！" << std::endl;
 		sum *= VIPDISCOUNT;
 	}
-	std::cout << "总金额为：" << sum << std::endl;
+	std::cout << "总金额为：" << sum << " 元" << std::endl;
 }
 
 void Purchase::pay()
@@ -464,9 +464,7 @@ void Purchase::getSumSpent()
 	double sumSpent = wares->getSumSpent(user->getUserName());
 	if (user->isVIP())
 		std::cout << "您是VIP用户 ";
-	else
-		std::cout << "您还不是VIP用户，总花费超过100元即可成为本店的VIP用户，享受专属折扣 ";
-	std::cout << "您一共在本店消费了 " << sumSpent << " 元，感谢您一直以来的的支持！" << std::endl;
+	std::cout << "您一共在本店消费了 " << sumSpent << " 元" << std::endl;
 }
 
 #define TEST 0

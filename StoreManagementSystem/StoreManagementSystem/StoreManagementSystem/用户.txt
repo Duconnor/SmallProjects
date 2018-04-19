@@ -1,9 +1,6 @@
 ÓÃ»§Ãû	ÃÜÂë
-user1	passworduser1
+user1	9022daebd17737ba0bd9cd4732ea66b6
 user2	passworduser2
 user3	passworduser3
 user4	passworduser4
-user7	a6eb3fde81826f2b1249b1ba8d4bf004
-njucs	7b9ae95203dbbc9e8d5eacd2d792e504
-testuser	5d9c68c6c50ed3d02a2fcf54f63993b6
-user10	17f7f1519c5413860bd1761e281910a3
+user7	666666
