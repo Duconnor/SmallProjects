@@ -18,12 +18,12 @@ void showLogMenu()
 void showPurchaseMenu()
 {
 	// 客户界面的菜单
-	char delim[] = { "=================================================================\
+	char delim[] = { "========================================================================================\
 =========================================================================================" };
 	char delim2[] = { "	" };
 	std::cout << delim << std::endl;
 	std::cout << "0.撤销上一步操作" << delim2 << "1.注销登录" << delim2 << "2.查看商品" << delim2 << "3.商品搜索" << delim2 << "4.添加商品至购物车" << delim2
-		<< "5.删除购物车商品" << delim2 << "6.查看购物车" << delim2 << "7.结账"<<delim2<<"8.修改密码"<< std::endl;
+		<< "5.删除购物车商品" << delim2 << "6.查看购物车" << delim2 << "7.结账" << delim2 << "8.修改密码" << delim2 << "9.获取总花费" << std::endl;
 	std::cout << delim << std::endl;
 }
 
@@ -158,6 +158,7 @@ void applicationOn()
 				case 6:userInterface.showShoppingCart(); break;
 				case 7:userInterface.pay(); break;
 				case 8:userInterface.revisePassword(); break;
+				case 9:userInterface.getSumSpent(); break;
 				default:break;
 				}
 			}

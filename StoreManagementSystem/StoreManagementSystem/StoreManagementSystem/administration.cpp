@@ -27,6 +27,7 @@ Administration::~Administration()
 Goods * Administration::searchForGoods()
 {
 	// 查询特定的商品（先用商品名，不能确定则可以选择用ID或者进一步利用牌子）
+	showGoodList();
 	std::cout << "请输入商品名" << std::endl;
 	char name[MAXSIZE];
 	std::cin >> name;

@@ -27,6 +27,7 @@ public:
 	void logOut();
 	void revisePassword();
 	void undo(); // 新增功能：用户添加商品进购物车、删除购物车中商品可撤销
+	void getSumSpent(); // 新增功能：查看历史总花费
 };
 
 #endif // !SMS_PURCHASE_H

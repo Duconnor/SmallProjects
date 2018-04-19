@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+const double VIPTHRESHOLD = 100.0;
+
 WareHouse::WareHouse(char * fileName, char *fileName2)
 {
 	FILE *file;
@@ -333,6 +335,24 @@ void WareHouse::undoModify(undoObject * undo)
 				goods->setPrice(undo->getPrice());
 			break;
 		}
+}
+
+bool WareHouse::isVIP(char * userName)
+{
+	double sumSpent = getSumSpent(userName);
+	if (sumSpent > VIPTHRESHOLD)
+		return true;
+	else
+		return false;
+}
+
+double WareHouse::getSumSpent(char * userName)
+{
+	double sumSpent = 0.0;
+	for (auto goods : soldGoodsList)
+		if (strcmp(goods->getBuyerName(), userName) == 0)
+			sumSpent += (goods->getPrice()*goods->getNumber());
+	return sumSpent;
 }
 
 

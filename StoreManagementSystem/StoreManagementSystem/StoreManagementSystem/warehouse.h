@@ -136,6 +136,8 @@ public:
 	void undoAdd(undoObject * undo); // 撤销添加操作
 	void undoDelete(undoObject * undo); // 撤销删除操作
 	void undoModify(undoObject * undo); // 撤销修改商品信息操作
+	bool isVIP(char * userName); // 一个用户是不是VIP
+	double getSumSpent(char * userName); // 获得该用户的总花费
 };
 
 #endif // !SMS_WAREHOUSE_H
