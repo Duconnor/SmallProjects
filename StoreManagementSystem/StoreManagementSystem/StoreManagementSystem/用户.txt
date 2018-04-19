@@ -3,6 +3,6 @@ user1	passworduser1
 user2	passworduser2
 user3	passworduser3
 user4	passworduser4
-
-
-user7	3df29ac28b43b9da774dd1de6409257e
+user7	a6eb3fde81826f2b1249b1ba8d4bf004
+njucs	7b9ae95203dbbc9e8d5eacd2d792e504
+testuser	5d9c68c6c50ed3d02a2fcf54f63993b6

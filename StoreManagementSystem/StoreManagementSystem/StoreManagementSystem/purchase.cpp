@@ -136,6 +136,7 @@ Goods * Purchase::searchForGoods(bool flag = false)
 
 void Purchase::addToShoppingCart()
 {
+	showGoodsList();
 	Goods * goods = searchForGoods();
 	undoObject * undoGoods = nullptr;
 	if (goods == nullptr)
@@ -324,6 +325,8 @@ void Purchase::pay()
 	{
 		wares->soldGoods(user->shoppingCart, user->getUserName());
 		std::cout << "成功！" << std::endl;
+		while (!undoStack.empty())
+			undoStack.pop();
 		if (!notEnoughFlag)
 			user->shoppingCart.clear();
 		else
@@ -406,7 +409,21 @@ void Purchase::undo()
 	else if (undo->getType() == add)
 	{
 		std::cout << "添加" << undo->getName() << "的操作被撤销" << std::endl;
-		user->shoppingCart.remove(undo->getIndex());
+		std::cout << "是否只是需要修改添加数量？是请输入1，否则输入0：";
+		int order = -1, num = 0;
+		std::cin >> order;
+		if (order == 1)
+		{
+			std::cout << "请输入修改后的数量" << std::endl;
+			std::cin >> num;
+			Goods * temp = wares->searchByID(undo->getID());
+			if (temp->getNumber() < num)
+				std::cout << "没有足够的商品可供添加" << std::endl;
+			else
+				user->shoppingCart[undo->getIndex()]->setNumber(num);
+		}
+		else
+			user->shoppingCart.remove(undo->getIndex());
 	}
 	else if (undo->getType() == numberLess)
 	{

@@ -8,10 +8,10 @@
 
 void showLogMenu()
 {
-	char delim[] = { "===============================================" };
+	char delim[] = { "=============================================================" };
 	std::cout << delim << std::endl;
 	char delim2[] = { "	" };
-	std::cout << "1.用户登录" << delim2 << "2.用户注册" << delim2 << "3.管理员登录"<< std::endl;
+	std::cout << "0.退出程序" << delim2 << "1.用户登录" << delim2 << "2.用户注册" << delim2 << "3.管理员登录" << std::endl;
 	std::cout << delim << std::endl;
 }
 
@@ -129,6 +129,7 @@ void applicationOn()
 			}
 			break;
 		}
+		case 0:return;
 		default:break;
 		}
 		// switch end
@@ -194,7 +195,7 @@ void applicationOn()
 int main()
 {
 	applicationOn();
-	system("pause");
+	return 0;
 }
 
 // 新增功能：显示当前登录的用户名称
