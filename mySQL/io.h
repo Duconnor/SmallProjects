@@ -20,6 +20,17 @@ public:
     File(string filename) {this->filename = filename;};
     vector<string> readLine(); // read one line and separate the word by space
     vector<vector<string>> readTable();
+    void writeLine(vector<string> line); // write the contents in a single line
+    void writeTable(vector<vector<string>> table); // write the content in the table to the file
+};
+
+
+// class Output: standard output
+class Output {
+public:
+    void showMenu();
+    void showTable(vector<vector<string>> table);
+    void showList(vector<vector<string>> list);
 };
 
 #endif

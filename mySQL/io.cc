@@ -1,6 +1,7 @@
 #include "io.h"
 #include <string.h>
 #include <iostream>
+#include <iomanip>
 #include <fstream>
 
 const int MAXSIZE = 10000;
@@ -42,9 +43,9 @@ vector<vector<string>> File::readTable() {
         infile.close();
         return table;
     }
-    char s[MAXSIZE]
-    infile.getline(s," ");
-    int size = firstLine.size(), int count = 0;
+    char s[MAXSIZE];
+    infile.getline(s, MAXSIZE);
+    int size = firstLine.size(), count = 0;
     string buffer;
     vector<string> oneLine;
     while(infile >> buffer) {
@@ -62,8 +63,65 @@ vector<vector<string>> File::readTable() {
     return table;
 }
 
-int main() {
-    // test
-    File file("")
-    return 0;
+void File::writeLine(vector<string> line) {
+    std::ofstream outfile (filename, std::ios::out);
+    if(!outfile.is_open()) {
+        std::cout << "open file error!" << std::endl;
+        outfile.clear();
+        outfile.close();
+        return;
+    }
+    for(auto s: line)
+        outfile << s << " ";
+    outfile << std::endl;
+    outfile.clear();
+    outfile.close();
 }
+
+void File::writeTable(vector<vector<string>> table) {
+    std::ofstream outfile (filename, std::ios::out);
+    if(!outfile.is_open()) {
+        std::cout << "open file error!" << std::endl;
+        outfile.clear();
+        outfile.close();
+        return;
+    }
+    for (auto i: table) {
+        for (auto j: i)
+            outfile << j << " ";
+        outfile << std::endl;
+    }
+    outfile.clear();
+    outfile.close();
+}
+
+void Output::showMenu() {
+    std::cout << "(mysql)==>";
+}
+
+void Output::showTable(vector<vector<string>> table) {
+    int num = table[0].size();
+    string delim = "-----------";
+    string frame;
+    for (int i = 0;i< num ;i++)
+        frame.append(delim);
+    std::cout << frame << std::endl;
+    for (auto line:table) {
+        for (auto s:line)
+            std::cout << std::left << std::setw(12) << s;
+        std::cout << std::endl;
+    }
+    std::cout << frame << std::endl;
+}
+
+void Output::showList(vector<vector<string>> list) {
+    int total = list.size();
+    std::cout << "\ttotal" << total << std::endl;
+    for (auto line:list) {
+        std::cout << "\t\t";
+        for (auto s:line)
+            std::cout << s;
+        std::cout << std::endl;
+    }
+}
+
