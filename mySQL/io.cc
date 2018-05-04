@@ -63,7 +63,7 @@ vector<vector<string> > File::readTable() {
     return table;
 }
 
-void File::writeLine(vector<string> line) {
+void File::writeLine(const vector<string>& line) {
     std::ofstream outfile (filename, std::ios::out);
     if(!outfile.is_open()) {
         std::cout << "open file error!" << std::endl;
@@ -78,7 +78,7 @@ void File::writeLine(vector<string> line) {
     outfile.close();
 }
 
-void File::writeTable(vector<vector<string> > table) {
+void File::writeTable(const vector<vector<string> >& table) {
     std::ofstream outfile (filename, std::ios::out);
     if(!outfile.is_open()) {
         std::cout << "open file error!" << std::endl;
@@ -99,7 +99,7 @@ void Output::showMenu() {
     std::cout << "(mysql)==>";
 }
 
-void Output::showTable(vector<vector<string> > table) {
+void Output::showTable(const vector<vector<string> >& table) {
     int num = table[0].size();
     string delim = "-----------";
     string frame;
@@ -114,17 +114,23 @@ void Output::showTable(vector<vector<string> > table) {
     std::cout << frame << std::endl;
 }
 
-void Output::showList(vector<vector<string> > list) {
+void Output::showList(const vector<string>& list) {
     int total = list.size();
-    std::cout << "\ttotal" << total << std::endl;
+    std::cout << "\ttotal " << total << std::endl;
     for (auto line:list) {
         std::cout << "\t\t";
-        for (auto s:line)
-            std::cout << s;
+        std::cout << line;
         std::cout << std::endl;
     }
 }
 
 void Output::showText(string text) {
     std::cout << text << std::endl;
+}
+
+string Input::getString() {
+    string s;
+    std::cin.clear();
+    std::getline(std::cin, s);
+    return s;
 }

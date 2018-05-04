@@ -80,23 +80,29 @@ string Table::getName() const {
     return name;
 }
 
-void Table::insert(string& values) {
+bool Table::insert(string& values) {
     vector<string> newLine = processString(values);
+    if (newLine.size() != getColNum())
+        return false;
     table.push_back(newLine);
+    return true;
 }
 
-void Table::insert(string& columns, string& values) {
+bool Table::insert(string& columns, string& values) {
     vector<string> columnsWords = processString(columns);
     vector<string> valuesWords = processString(values);
+    if (columnsWords.size() != valuesWords.size())
+        return false;
     int size = columnsWords.size();
     vector<int> index = findMatch(columnsWords);
     vector<string> newLine(size, "");
     for (int i = 0; i < size; i++)
         newLine[index[i]] = valuesWords[i];
     table.push_back(newLine);
+    return true;
 }
 
-void Table::remove(string& column, string& value) {
+bool Table::remove(string& column, string& value) {
     vector<string> col(1, column);
     vector<int> index = findMatch(col);
     auto ite = table.begin();
@@ -104,8 +110,9 @@ void Table::remove(string& column, string& value) {
         if ((*ite).at(index[0]) == value)
             break;
     if (ite == table.end())
-        return;
+        return false;
     table.erase(ite);
+    return true;
 }
 
 void Table::remove() {

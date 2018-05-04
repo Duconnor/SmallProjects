@@ -5,6 +5,6 @@ int main() {
     string s1 = "tableName.txt";
     Process process(s, s1);
     string s2 = "student";
-    process.testProcess(s2);
+    process.applicationOn();
     return 0;
 }

@@ -30,9 +30,12 @@ public:
     Table(const Table& that);
     const vector<vector<string> >& getTable() const;
     string getName() const;
-    void insert(string& values); // insert full values
-    void insert(string& columns, string& values); // insert values indicated by columns name
-    void remove(string& column, string& value); // delete rows whose column matches value
+    int getRowNum() { return table.size() - 1; };
+    int getColNum() { return table[0].size(); };
+    vector<string> getTableHead() { return table[0]; };
+    bool insert(string& values); // insert full values
+    bool insert(string& columns, string& values); // insert values indicated by columns name
+    bool remove(string& column, string& value); // delete rows whose column matches value
     void remove(); // delete all rows in the table
     void update(vector<string>& columns, vector<string>& values); // update information in the given columns
     void update(vector<string>& columns, vector<string>& values, string& colConstraints, string& valConstraints);\
