@@ -101,12 +101,18 @@ void Output::showMenu() {
 
 void Output::showTable(const vector<vector<string> >& table) {
     int num = table[0].size();
-    string delim = "-----------";
+    string delim = "---------------";
     string frame;
-    for (int i = 0;i< num ;i++)
+    for (int i = 0;i< num + 1 ;i++)
         frame.append(delim);
     std::cout << frame << std::endl;
+    int count = 0;
     for (auto line:table) {
+        if (count == 0)
+            std::cout << std::left << std::setw(12) << "ID";
+        else
+            std::cout << std::left << std::setw(12) << count;
+        count++;
         for (auto s:line)
             std::cout << std::left << std::setw(12) << s;
         std::cout << std::endl;

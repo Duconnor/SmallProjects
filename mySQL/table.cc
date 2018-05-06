@@ -39,7 +39,7 @@ vector<string> Table::processCommaString(string& s) {
 
 vector<int> Table::findMatch(vector<string>& constraints) {
     int size = constraints.size();
-    vector<int> index(size);
+    vector<int> index(size, -1);
     for (int i = 0; i < size; i++)
         for (int j = 0; j < table[0].size(); j++)
             if (constraints[i] == table[0][j]) {
@@ -144,6 +144,8 @@ vector<vector<string> > Table::select(string& s) {
     vector<string> columns = processCommaString(s);
     vector<vector<string> > result;
     vector<int> index = findMatch(columns);
+    if (index[0] == -1)
+        return result;
     for (auto line: table) {
         vector<string> newLine;
         for (auto i: index)

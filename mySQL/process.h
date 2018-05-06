@@ -23,18 +23,15 @@ private:
     bool deleteFrom(string& name);
     bool update(string& name, vector<string>& columns, vector<string>& values);
     bool update(string& name, vector<string>& columns, vector<string>& values, string& column, string& value);
-    bool selectPart(string& name, string& columns);
-    bool selectAll(string& name);
-    bool selectDistinctPart(string& name, string& columns);
-    bool selectDistinctAll(string& name);
-    bool selectOrderPart(string& name, string& columns, string& cols, string& whatOrder);
-    bool selectOrderAll(string& name, string& cols, string& whatOrder);
-    bool selectRequirePart(string& name, string& columns, string& column, string& value);
-    bool selectRequireAll(string& name, string& column, string& value);
-    bool selectPartToFile(string& name, string& columns, string& filename);
-    bool selectAllToFile(string& name, string& filename);
+    vector<vector<string> > selectAll(string& name);
+    vector<vector<string> > selectPart(string& name, string& columns);
+    vector<vector<string> > distinctIt(string& name, vector<vector<string> >& temp);
+    vector<vector<string> > orderIt(string& name, vector<vector<string> >& temp, string& whatOrder, string& columns);
+    vector<vector<string> > findRequire(string& name, vector<vector<string> >& temp, string& cols, string& vals);
+    void writeToFile(string& filename, vector<vector<string> >& temp);
 
     vector<string> splitBySpace(string& s);
+    bool updateProcess(vector<string>& columns, vector<string>& values, vector<string>& result, int start, int end);
 public:
     Process();
     Process(string& fileNameTableFile, string& fileNameTableName); // construct all tables from the given file
