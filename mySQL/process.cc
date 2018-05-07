@@ -154,7 +154,7 @@ bool Process::insertInto(string& name, string& values) {
 
 bool Process::insertInto(string& name, string& columns, string& values) {
     int index = find(name);
-    if (index == -1 || !database[index].insert(columns, values))
+    if (index == -1 || !(database[index].insert(columns, values)))
         return false;
     Output out;
     out.showTable(database[index].getTable());
@@ -163,7 +163,7 @@ bool Process::insertInto(string& name, string& columns, string& values) {
 
 bool Process::deleteFrom(string& name, string& column, string& value) {
     int index = find(name);
-    if (index == -1 || !database[index].remove(column, value))
+    if (index == -1 || !(database[index].remove(column, value)))
         return false;
     Output out;
     out.showTable(database[index].getTable());
@@ -184,7 +184,8 @@ bool Process::update(string& name, vector<string>& columns, vector<string>& valu
     int index = find(name);
     if (index == -1)
         return false;
-    database[index].update(columns, values);
+    if (!database[index].update(columns, values))
+        return false;
     Output out;
     out.showTable(database[index].getTable());
     return true;
@@ -194,7 +195,8 @@ bool Process::update(string& name, vector<string>& columns, vector<string>& valu
     int index = find(name);
     if (index == -1)
         return false;
-    database[index].update(columns, values, column, value);
+    if (!database[index].update(columns, values, column, value))
+        return false;
     Output out;
     out.showTable(database[index].getTable());
     return true;
@@ -345,7 +347,8 @@ void Process::applicationOn() {
             string name = result[2];
             if (result[3] == "VALUES" && result.size() == 5) {
                 string values = result[4];
-                insertInto(name, values);
+                if (!insertInto(name, values))
+                    out.showText("Error! Columns number does not match!");
                 flag = true;
             } else if (result[4] == "VALUES" && result.size() == 6) {
                 string columns = result[3];
@@ -361,7 +364,8 @@ void Process::applicationOn() {
                 string name = result[2];
                 string column = result[4];
                 string value = result[6];
-                deleteFrom(name, column, value);
+                if (!deleteFrom(name, column, value))
+                    out.showText("Error! Input no match! Please check your input");
                 flag = true;
             } else if (result[1] == "*" && result.size() == 4 && result[2] == "FROM") {
                 string name = result[3];
@@ -499,11 +503,13 @@ void Process::applicationOn() {
                 continue;
             }
             if (where) {
-                update(name, columns, values, cols, vals);
+                if(!update(name, columns, values, cols, vals))
+                    out.showText("Error! Input not match!");
                 flag = true;
             }
             else {
-                update(name, columns, values);
+                if (!update(name, columns, values))
+                    out.showText("Error! Input not match!");
                 flag = true;
             }
         } else

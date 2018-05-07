@@ -37,8 +37,8 @@ public:
     bool insert(string& columns, string& values); // insert values indicated by columns name
     bool remove(string& column, string& value); // delete rows whose column matches value
     void remove(); // delete all rows in the table
-    void update(vector<string>& columns, vector<string>& values); // update information in the given columns
-    void update(vector<string>& columns, vector<string>& values, string& colConstraints, string& valConstraints);\
+    bool update(vector<string>& columns, vector<string>& values); // update information in the given columns
+    bool update(vector<string>& columns, vector<string>& values, string& colConstraints, string& valConstraints);\
         // update the information in the asked row
     vector<vector<string> > select(string& s); // return the asked columns
     vector<vector<string> >& select(); // return the whole table

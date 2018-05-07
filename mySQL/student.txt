@@ -1,4 +1,1 @@
 ID Name Major 
-170000002 Chen Chem 
-170000003 Du CS 
-170000004 Xin Social 

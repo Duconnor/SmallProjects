@@ -95,9 +95,15 @@ bool Table::insert(string& columns, string& values) {
         return false;
     int size = columnsWords.size();
     vector<int> index = findMatch(columnsWords);
-    vector<string> newLine(size, "");
-    for (int i = 0; i < size; i++)
-        newLine[index[i]] = valuesWords[i];
+    vector<string> newLine;
+    int count = 0;
+    for (int i = 0; i < getColNum(); i++) {
+        auto ite = std::find(index.begin(), index.end(), i);
+        if (ite == index.end())
+            newLine.push_back("");
+        else
+            newLine.push_back(valuesWords[distance(index.begin(), ite)]);
+    }
     table.push_back(newLine);
     return true;
 }
@@ -105,13 +111,20 @@ bool Table::insert(string& columns, string& values) {
 bool Table::remove(string& column, string& value) {
     vector<string> col(1, column);
     vector<int> index = findMatch(col);
-    auto ite = table.begin();
-    for (; ite != table.end(); ite++)
-        if ((*ite).at(index[0]) == value)
-            break;
-    if (ite == table.end())
+    if (index[0] == -1)
         return false;
-    table.erase(ite);
+    bool flag = false;
+    auto ite = table.begin();
+    for (; ite != table.end(); ) {
+        if ((*ite).at(index[0]) == value) {
+            ite = table.erase(ite);
+            flag = true;
+        }
+        else
+            ite++;
+    }
+    if (!flag)
+        return flag;
     return true;
 }
 
@@ -121,23 +134,34 @@ void Table::remove() {
     table.erase(iteStart, iteEnd);
 }
 
-void Table::update(vector<string>& columns, vector<string>& values) {
+bool Table::update(vector<string>& columns, vector<string>& values) {
     vector<int> index = findMatch(columns);
+    for (auto i: index)
+        if (i == -1)
+            return false;
     for (int i = 1; i < table.size(); i++)
         for (int j = 0; j < index.size(); j++)
             table[i][index[j]] = values[j];
+    return true;
 }
 
-void Table::update(vector<string>& columns, vector<string>& values, string& colConstraints, string& valConstraints) {
+bool Table::update(vector<string>& columns, vector<string>& values, string& colConstraints, string& valConstraints) {
     vector<int> index = findMatch(columns);
     vector<string> col(1, colConstraints);
     vector<int> indexConstraints = findMatch(col);
+    for (auto i: index)
+        if (i == -1)
+            return false;
+    for (auto i: indexConstraints)
+        if (i == -1)
+            return false;
     for (int i = 1; i < table.size(); i++)
         if (table[i][indexConstraints[0]] == valConstraints) {
             // find the matched line
             for (int j = 0; j < index.size(); j++)
                 table[i][index[j]] = values[j];
         }
+    return true;
 }
 
 vector<vector<string> > Table::select(string& s) {
