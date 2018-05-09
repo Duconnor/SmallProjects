@@ -32,13 +32,14 @@ private:
 
     vector<string> splitBySpace(string& s);
     bool updateProcess(vector<string>& columns, vector<string>& values, vector<string>& result, int start, int end);
+    bool isLegal(string& order);
+    void performOrder(string& order);
+    void doWhatFileSays(vector<string>& orders);
 public:
     Process();
     Process(string& fileNameTableFile, string& fileNameTableName); // construct all tables from the given file
     ~Process();
     void applicationOn();
-
-
 };
 
 #endif

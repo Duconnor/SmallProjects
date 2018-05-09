@@ -228,7 +228,7 @@ vector<vector<string> > Table::orderSelect(vector<vector<string> >&temp, string&
             }
         }
     }
-    if (whatOrder == "ASC")
+    if (whatOrder == "DESC")
         return result;
     else {
         reverse(result.begin() + 1, result.end());

@@ -30,6 +30,26 @@ vector<string> File::readLine() {
     }
     infile.clear();
     infile.close();
+    return tableName;
+}
+
+vector<string> File::readLineByLine() {
+    vector<string> result;
+    std::ifstream infile(filename,std::ios::in);
+
+    if (!infile.is_open()) {
+        std::cout << "open file error!" << std::endl;
+        infile.clear();
+        infile.close();
+        return result;
+    }
+
+    string line;
+    while(getline(infile, line))
+        result.push_back(line);
+    infile.clear();
+    infile.close();
+    return result;
 }
 
 vector<vector<string> > File::readTable() {

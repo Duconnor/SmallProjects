@@ -282,6 +282,398 @@ bool Process::updateProcess(vector<string>& columns, vector<string>& values, vec
     return true;
 }
 
+bool Process::isLegal(string& order) {
+    bool flag = false;
+    Output out;
+    vector<string> result = splitBySpace(order);
+    if (result.size() < 2)
+        return false;
+    if (result[0] == "CREATE" && result[1] == "TABLE") {
+       // create table family
+       if (result.size() != 5 && result.size() != 6)
+           return false;
+       int count = 2;
+       string name = result[count++];
+       string columns = result[count++];
+       if (columns == "FROM") {
+           // create table from file
+           string filename = result[count++];
+           if (count != result.size())
+               return false;
+           flag = true;
+       } else if (result[count++] == "TO") {
+           // create table to file
+           string filename = result[count++];
+           if (count != result.size())
+               return false;
+           flag = true;
+       } else
+           return false;
+    } else if (result[0] == "DROP" && result[1] == "TABLE") {
+       if (result.size() == 2)
+           return false;
+       flag = true;
+    } else if (result[0] == "TABLE" && result[1] == "LIST") {
+       flag = true;
+    } else if (result[0] == "INSERT" && result[1] == "INTO") {
+       if (result.size() != 5 && result.size() != 6)
+           return false;
+       string name = result[2];
+       if (result[3] == "VALUES" && result.size() == 5) {
+           string values = result[4];
+           flag = true;
+       } else if (result[4] == "VALUES" && result.size() == 6) {
+           string columns = result[3];
+           string values = result[5];
+           flag = true;
+       } else
+           return false;
+    } else if (result[0] == "DELETE") {
+       if (result[1] == "FROM" && result.size() == 7 && result[3] == "WHERE" && result[5] == "=") {
+           string name = result[2];
+           string column = result[4];
+           string value = result[6];
+           flag = true;
+       } else if (result[1] == "*" && result.size() == 4 && result[2] == "FROM") {
+           string name = result[3];
+           flag = true;
+       }
+    } else if (result[0] == "SELECT") {
+       auto ite = std::find(result.begin(), result.end(), "FROM");
+       string name, columns, cols, vals, orderCols, whatOrder, filename;
+       bool distinct = false, order = false, where = false, to = false;
+       if (ite == result.end()) {
+           return false;
+       } else
+           name = *(ite + 1);
+       ite = std::find(result.begin(), result.end(), "DISTINCT");
+       if (ite == result.end()) {
+           columns = result[1];
+           distinct = false;
+       } else {
+           columns = *(ite + 1);
+           distinct = true;
+       }
+       // search for key word "ORDER"
+       ite = std::find(result.begin(), result.end(), "ORDER");
+       if (ite == result.end())
+           order = false;
+       else {
+           if (*(ite + 1) != "BY") {
+               return false;
+           } else {
+               order = true;
+               orderCols = *(ite + 2);
+               whatOrder = *(ite + 3);
+           }
+       }
+       // search for key word "WHERE"
+       ite = std::find(result.begin(), result.end(), "WHERE");
+       if (ite == result.end())
+           where = false;
+       else {
+           if (*(ite + 2) != "=") {
+               return false;
+           } else {
+               cols = *(ite + 1);
+               vals = *(ite + 3);
+               where = true;
+           }
+       }
+       // search for key word "TO"
+       ite = std::find(result.begin(), result.end(), "TO");
+       if (ite == result.end())
+           to = false;
+       else {
+           filename = *(ite + 1);
+           to = true;
+       }
+    } else if (result[0] == "UPDATE") {
+       string name = result[1];
+       if (result[2] != "SET") {
+           return false;
+       }
+       bool where = false;
+       string cols, vals;
+       int end = result.size();
+       auto ite = std::find(result.begin(), result.end(), "WHERE");
+       if (ite == result.end())
+           where = false;
+       else {
+           if (*(ite + 2) != "=") {
+               return false;
+           } else {
+               cols = *(ite + 1);
+               vals = *(ite + 3);
+               where = true;
+               end = std::distance(result.begin(), ite);
+           }
+       }
+    } else
+       return flag;
+    return flag;
+}
+
+void Process::performOrder(string& order) {
+    bool flag;
+    Output out;
+    vector<string> result = splitBySpace(order);
+    if (result.size() < 2) {
+        out.showText("Unknown order!");
+        return;
+    }
+    if (result[0] == "CREATE" && result[1] == "TABLE") {
+        // create table family
+        if (result.size() != 5 && result.size() != 6) {
+            out.showText("Unknown order!");
+            return;
+        }
+        int count = 2;
+        string name = result[count++];
+        string columns = result[count++];
+        if (columns == "FROM") {
+            // create table from file
+            string filename = result[count++];
+            if (count != result.size()) {
+                out.showText("Unknown order!");
+                return;
+            }
+            createTableFromFile(name, filename);
+            flag = true;
+        } else if (result[count++] == "TO") {
+            // create table to file
+            string filename = result[count++];
+            if (count != result.size()) {
+                out.showText("Unknown order!");
+                return;
+            }
+            createTableToFile(name, columns, filename);
+            flag = true;
+        } else {
+            out.showText("Unknown order!");
+            return;
+        }
+    } else if (result[0] == "DROP" && result[1] == "TABLE") {
+        if (result.size() == 2) {
+            out.showText("Unknown order!");
+            return;
+        }
+        dropTable(result[2]);
+        flag = true;
+    } else if (result[0] == "TABLE" && result[1] == "LIST") {
+        vector<string> list = getTableList();
+        out.showList(list);
+        flag = true;
+    } else if (result[0] == "INSERT" && result[1] == "INTO") {
+        if (result.size() != 5 && result.size() != 6) {
+            out.showText("Unknown order!");
+            return;
+        }
+        string name = result[2];
+        if (result[3] == "VALUES" && result.size() == 5) {
+            string values = result[4];
+            if (!insertInto(name, values))
+                out.showText("Error! Columns number does not match!");
+            flag = true;
+        } else if (result[4] == "VALUES" && result.size() == 6) {
+            string columns = result[3];
+            string values = result[5];
+            insertInto(name, columns, values);
+            flag = true;
+        } else {
+            out.showText("Unknown order!");
+            return;
+        }
+    } else if (result[0] == "DELETE") {
+        if (result[1] == "FROM" && result.size() == 7 && result[3] == "WHERE" && result[5] == "=") {
+            string name = result[2];
+            string column = result[4];
+            string value = result[6];
+            if (!deleteFrom(name, column, value))
+                out.showText("Error! Input no match! Please check your input");
+            flag = true;
+        } else if (result[1] == "*" && result.size() == 4 && result[2] == "FROM") {
+            string name = result[3];
+            deleteFrom(name);
+            flag = true;
+        }
+    } else if (result[0] == "SELECT") {
+        auto ite = std::find(result.begin(), result.end(), "FROM");
+        string name, columns, cols, vals, orderCols, whatOrder, filename;
+        bool distinct = false, order = false, where = false, to = false;
+        if (ite == result.end()) {
+            out.showText("Unknown order!");
+            return;
+        } else
+            name = *(ite + 1);
+        ite = std::find(result.begin(), result.end(), "DISTINCT");
+        if (ite == result.end()) {
+            columns = result[1];
+            distinct = false;
+        } else {
+            columns = *(ite + 1);
+            distinct = true;
+        }
+        // search for key word "ORDER"
+        ite = std::find(result.begin(), result.end(), "ORDER");
+        if (ite == result.end())
+            order = false;
+        else {
+            if (*(ite + 1) != "BY") {
+                out.showText("Unknown order!");
+                return;
+            } else {
+                order = true;
+                orderCols = *(ite + 2);
+                whatOrder = *(ite + 3);
+            }
+        }
+        // search for key word "WHERE"
+        ite = std::find(result.begin(), result.end(), "WHERE");
+        if (ite == result.end())
+            where = false;
+        else {
+            if (*(ite + 2) != "=") {
+                out.showText("Unknown order!");
+                return;
+            } else {
+                cols = *(ite + 1);
+                vals = *(ite + 3);
+                where = true;
+            }
+        }
+        // search for key word "TO"
+        ite = std::find(result.begin(), result.end(), "TO");
+        if (ite == result.end())
+            to = false;
+        else {
+            filename = *(ite + 1);
+            to = true;
+        }
+        // now process
+        vector<vector<string> > result;
+        if (columns == "*") {
+            result = selectAll(name);
+            if (result.size() == 0) {
+                out.showText("No match!");
+                return;
+            }
+            flag = true;
+        }
+        else {
+            result = selectPart(name, columns);
+            if (result.size() == 0) {
+                out.showText("No match!");
+                return;
+            }
+            flag = true;
+        }
+        if (distinct) {
+            result = distinctIt(name, result);
+            if (result.size() == 0) {
+                out.showText("No match!");
+                return;
+            }
+            flag = true;
+        }
+        if (order) {
+            result = orderIt(name, result, whatOrder, orderCols);
+            if (result.size() == 0) {
+                out.showText("No match!");
+                return;
+            }
+            flag = true;
+        }
+        if (where) {
+            result = findRequire(name, result, cols, vals);
+            if (result.size() == 0) {
+                out.showText("No match!");
+                return;
+            }
+            flag = true;
+        }
+        out.showTable(result);
+        if (to) {
+            writeToFile(filename, result);
+            flag = true;
+        }
+    } else if (result[0] == "UPDATE") {
+        string name = result[1];
+        if (result[2] != "SET") {
+            out.showText("Unknown order!");
+            return;
+        }
+        bool where = false;
+        string cols, vals;
+        int end = result.size();
+        auto ite = std::find(result.begin(), result.end(), "WHERE");
+        if (ite == result.end())
+            where = false;
+        else {
+            if (*(ite + 2) != "=") {
+                out.showText("Unknown order!");
+                return;
+            } else {
+                cols = *(ite + 1);
+                vals = *(ite + 3);
+                where = true;
+                end = std::distance(result.begin(), ite);
+            }
+        }
+        // now process
+        vector<string> columns;
+        vector<string> values;
+        if (!updateProcess(columns, values, result, 3, end)) {
+            out.showText("Unknown order!");
+            return;
+        }
+        if (where) {
+            if(!update(name, columns, values, cols, vals))
+                out.showText("Error! Input not match!");
+            flag = true;
+        }
+        else {
+            if (!update(name, columns, values))
+                out.showText("Error! Input not match!");
+            flag = true;
+        }
+    } else if (result[0] == "USE" && result[1] == "FILE") {
+        if (result.size() != 3) {
+            out.showText("Unknown order!");
+            return;
+        }
+        string filename = result[2];
+        File infile(filename);
+        vector<string> orders = infile.readLineByLine();
+        doWhatFileSays(orders);
+    } else
+        if (!flag)
+            out.showText("Unknown Order!");
+
+}
+
+void Process::doWhatFileSays(vector<string>& orders) {
+    vector<int> log;
+    Output out;
+    for (int i = 0; i < orders.size(); i++)
+        if (!isLegal(orders[i]))
+            log.push_back(i + 1);
+    if (log.size() == 0)
+        for (auto order: orders)
+            performOrder(order);
+    else
+        for (auto i: log) {
+            std::stringstream ss;
+            ss << i;
+            string index;
+            ss >> index;
+            string textA = "ERROR IN ";
+            string textB = " LINE";
+            string text = textA + index + textB;
+            out.showText(text);
+        }
+}
+
 void Process::applicationOn() {
     Input in;
     Output out;
@@ -292,228 +684,6 @@ void Process::applicationOn() {
         s = in.getString();
         if (s == "quit")
             break;
-        vector<string> result = splitBySpace(s);
-        if (result.size() < 2) {
-            out.showText("Unknown order!");
-            continue;
-        }
-        if (result[0] == "CREATE" && result[1] == "TABLE") {
-            // create table family
-            if (result.size() != 5 && result.size() != 6) {
-                out.showText("Unknown order!");
-                continue;
-            }
-            int count = 2;
-            string name = result[count++];
-            string columns = result[count++];
-            if (columns == "FROM") {
-                // create table from file
-                string filename = result[count++];
-                if (count != result.size()) {
-                    out.showText("Unknown order!");
-                    continue;
-                }
-                createTableFromFile(name, filename);
-                flag = true;
-            } else if (result[count++] == "TO") {
-                // create table to file
-                string filename = result[count++];
-                if (count != result.size()) {
-                    out.showText("Unknown order!");
-                    continue;
-                }
-                createTableToFile(name, columns, filename);
-                flag = true;
-            } else {
-                out.showText("Unknown order!");
-                continue;
-            }
-        } else if (result[0] == "DROP" && result[1] == "TABLE") {
-            if (result.size() == 2) {
-                out.showText("Unknown order!");
-                continue;
-            }
-            dropTable(result[2]);
-            flag = true;
-        } else if (result[0] == "TABLE" && result[1] == "LIST") {
-            vector<string> list = getTableList();
-            out.showList(list);
-            flag = true;
-        } else if (result[0] == "INSERT" && result[1] == "INTO") {
-            if (result.size() != 5 && result.size() != 6) {
-                out.showText("Unknown order!");
-                continue;
-            }
-            string name = result[2];
-            if (result[3] == "VALUES" && result.size() == 5) {
-                string values = result[4];
-                if (!insertInto(name, values))
-                    out.showText("Error! Columns number does not match!");
-                flag = true;
-            } else if (result[4] == "VALUES" && result.size() == 6) {
-                string columns = result[3];
-                string values = result[5];
-                insertInto(name, columns, values);
-                flag = true;
-            } else {
-                out.showText("Unknown order!");
-                continue;
-            }
-        } else if (result[0] == "DELETE") {
-            if (result[1] == "FROM" && result.size() == 7 && result[3] == "WHERE" && result[5] == "=") {
-                string name = result[2];
-                string column = result[4];
-                string value = result[6];
-                if (!deleteFrom(name, column, value))
-                    out.showText("Error! Input no match! Please check your input");
-                flag = true;
-            } else if (result[1] == "*" && result.size() == 4 && result[2] == "FROM") {
-                string name = result[3];
-                deleteFrom(name);
-                flag = true;
-            }
-        } else if (result[0] == "SELECT") {
-            auto ite = std::find(result.begin(), result.end(), "FROM");
-            string name, columns, cols, vals, orderCols, whatOrder, filename;
-            bool distinct = false, order = false, where = false, to = false;
-            if (ite == result.end()) {
-                out.showText("Unknown order!");
-                continue;
-            } else
-                name = *(ite + 1);
-            ite = std::find(result.begin(), result.end(), "DISTINCT");
-            if (ite == result.end()) {
-                columns = result[1];
-                distinct = false;
-            } else {
-                columns = *(ite + 1);
-                distinct = true;
-            }
-            // search for key word "ORDER"
-            ite = std::find(result.begin(), result.end(), "ORDER");
-            if (ite == result.end())
-                order = false;
-            else {
-                if (*(ite + 1) != "BY") {
-                    out.showText("Unknown order!");
-                    continue;
-                } else {
-                    order = true;
-                    orderCols = *(ite + 2);
-                    whatOrder = *(ite + 3);
-                }
-            }
-            // search for key word "WHERE"
-            ite = std::find(result.begin(), result.end(), "WHERE");
-            if (ite == result.end())
-                where = false;
-            else {
-                if (*(ite + 2) != "=") {
-                    out.showText("Unknown order!");
-                    continue;
-                } else {
-                    cols = *(ite + 1);
-                    vals = *(ite + 3);
-                    where = true;
-                }
-            }
-            // search for key word "TO"
-            ite = std::find(result.begin(), result.end(), "TO");
-            if (ite == result.end())
-                to = false;
-            else {
-                filename = *(ite + 1);
-                to = true;
-            }
-            // now process
-            vector<vector<string> > result;
-            if (columns == "*") {
-                result = selectAll(name);
-                if (result.size() == 0) {
-                    out.showText("No match!");
-                    continue;
-                }
-                flag = true;
-            }
-            else {
-                result = selectPart(name, columns);
-                if (result.size() == 0) {
-                    out.showText("No match!");
-                    continue;
-                }
-                flag = true;
-            }
-            if (distinct) {
-                result = distinctIt(name, result);
-                if (result.size() == 0) {
-                    out.showText("No match!");
-                    continue;
-                }
-                flag = true;
-            }
-            if (order) {
-                result = orderIt(name, result, whatOrder, orderCols);
-                if (result.size() == 0) {
-                    out.showText("No match!");
-                    continue;
-                }
-                flag = true;
-            }
-            if (where) {
-                result = findRequire(name, result, cols, vals);
-                if (result.size() == 0) {
-                    out.showText("No match!");
-                    continue;
-                }
-                flag = true;
-            }
-            out.showTable(result);
-            if (to) {
-                writeToFile(filename, result);
-                flag = true;
-            }
-        } else if (result[0] == "UPDATE") {
-            string name = result[1];
-            if (result[2] != "SET") {
-                out.showText("Unknown order!");
-                continue;
-            }
-            bool where = false;
-            string cols, vals;
-            int end = result.size();
-            auto ite = std::find(result.begin(), result.end(), "WHERE");
-            if (ite == result.end())
-                where = false;
-            else {
-                if (*(ite + 2) != "=") {
-                    out.showText("Unknown order!");
-                    continue;
-                } else {
-                    cols = *(ite + 1);
-                    vals = *(ite + 3);
-                    where = true;
-                    end = std::distance(result.begin(), ite);
-                }
-            }
-            // now process
-            vector<string> columns;
-            vector<string> values;
-            if (!updateProcess(columns, values, result, 3, end)) {
-                out.showText("Unknown order!");
-                continue;
-            }
-            if (where) {
-                if(!update(name, columns, values, cols, vals))
-                    out.showText("Error! Input not match!");
-                flag = true;
-            }
-            else {
-                if (!update(name, columns, values))
-                    out.showText("Error! Input not match!");
-                flag = true;
-            }
-        } else
-            if (!flag)
-                out.showText("Unknown Order");
+        performOrder(s);
     }
 }

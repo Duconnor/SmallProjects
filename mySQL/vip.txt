@@ -1,0 +1,3 @@
+name age spent 
+du 19 10000 
+wang 20 1999 

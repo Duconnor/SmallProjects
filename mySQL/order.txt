@@ -1,0 +1,5 @@
+TABLE LIST
+CREATE TABLE vip (name,age,spent) TO vip.txt
+TABLE LIST
+DROP TABLE student
+TABLE LIST
