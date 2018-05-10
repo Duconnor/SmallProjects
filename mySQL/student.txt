@@ -1,1 +1,4 @@
-ID Name Major 
+Name Major Age 
+Du Chem 20 
+Wang CS 25 
+Li CS 30 

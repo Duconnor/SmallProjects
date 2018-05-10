@@ -47,6 +47,7 @@ public:
         // return only the asked row
     vector<vector<string> > orderSelect(vector<vector<string> >& temp, string& columns, string& whatOrder); \
         // display the table in asked order according to the given columns
+    vector<vector<string> > maxSelect(vector<vector<string> >& temp, string& column); // find the one who gets the max value in column
 };
 
 #endif

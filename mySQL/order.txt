@@ -1,5 +1,5 @@
+CREATE TABLE user FROM user.txt
 TABLE LIST
-CREATE TABLE vip (name,age,spent) TO vip.txt
-TABLE LIST
-DROP TABLE student
-TABLE LIST
+INSERT INTO user VALUES (Li,20,female)
+INSERT INTO user VALUES (Dm,25,male)
+DROP TABLE user

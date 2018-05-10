@@ -100,7 +100,7 @@ bool Table::insert(string& columns, string& values) {
     for (int i = 0; i < getColNum(); i++) {
         auto ite = std::find(index.begin(), index.end(), i);
         if (ite == index.end())
-            newLine.push_back("");
+            newLine.push_back(" ");
         else
             newLine.push_back(valuesWords[distance(index.begin(), ite)]);
     }
@@ -234,4 +234,23 @@ vector<vector<string> > Table::orderSelect(vector<vector<string> >&temp, string&
         reverse(result.begin() + 1, result.end());
         return result;
     }
+}
+
+vector<vector<string> > Table::maxSelect(vector<vector<string> >& temp, string& column) {
+    vector<string> col;
+    col.push_back(column);
+    vector<int> index = findMatch(col);
+    vector<vector<string> > result;
+    if (temp.size() <= 1 || index[0] == -1)
+        return result;
+    int maxIndex = 1;
+    for (int i = 2; i < temp.size(); i++) {
+        if (table[i][index[0]].length() > table[maxIndex][index[0]].length())
+            maxIndex = i;
+        else if (table[i][index[0]].length() == table[maxIndex][index[0]].length())
+            if (table[i][index[0]] > table[maxIndex][index[0]])
+                maxIndex = i;
+    }
+    result.push_back(table[maxIndex]);
+    return result;
 }

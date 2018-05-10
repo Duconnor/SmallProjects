@@ -1,2 +1,5 @@
-Name Age Job Sex 
-du 19 student male 
+Name Age Sex 
+Wang 20 male 
+Li 18 female 
+Wu 25 male 
+Sun 30 female 

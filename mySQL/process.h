@@ -28,12 +28,14 @@ private:
     vector<vector<string> > distinctIt(string& name, vector<vector<string> >& temp);
     vector<vector<string> > orderIt(string& name, vector<vector<string> >& temp, string& whatOrder, string& columns);
     vector<vector<string> > findRequire(string& name, vector<vector<string> >& temp, string& cols, string& vals);
+    vector<vector<string> > findMax(string& name, vector<vector<string> >& temp, string& col);
     void writeToFile(string& filename, vector<vector<string> >& temp);
+    void showLegalOrder();
 
     vector<string> splitBySpace(string& s);
     bool updateProcess(vector<string>& columns, vector<string>& values, vector<string>& result, int start, int end);
     bool isLegal(string& order);
-    void performOrder(string& order);
+    bool performOrder(string& order);
     void doWhatFileSays(vector<string>& orders);
 public:
     Process();

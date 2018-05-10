@@ -1,4 +1,0 @@
-Name Age Sex 
-Wang 20 Female 
-Du 19 Female 
-Huang 36 Female 

@@ -1,2 +1,0 @@
-Name Age Sex 
-Wang 12 Female 

@@ -233,9 +233,53 @@ vector<vector<string> > Process::findRequire(string& name, vector<vector<string>
     return database[index].requiredSelect(temp, cols, vals);
 }
 
+vector<vector<string> > Process::findMax(string& name, vector<vector<string> >& temp, string& col) {
+    int index = find(name);
+    return database[index].maxSelect(temp, col);
+}
+
 void Process::writeToFile(string& filename, vector<vector<string> >& temp) {
     File outfile(filename);
     outfile.writeTable(temp);
+}
+
+void Process::showLegalOrder() {
+    Output out;
+    out.showText("Legal order include:");
+    out.showText(" ");
+    out.showText("Create table order:");
+    out.showText("CREATE TABLE xxx (xx,xx,xx) TO xxx");
+    out.showText("CREATE TABLE xxx FROM xxx");
+    out.showText(" ");
+    out.showText("Delete table order:");
+    out.showText("DROP TABLE xxx");
+    out.showText(" ");
+    out.showText("Show table list:");
+    out.showText("TABLE LIST");
+    out.showText(" ");
+    out.showText("Insert information into table:");
+    out.showText("INSERT INTO xxx VALUES (xx,xx,xx)");
+    out.showText("INSERT INTO xxx (xx,xx) VALUES (xx,xx)");
+    out.showText(" ");
+    out.showText("Delete information in the table:");
+    out.showText("DELETE FROM xxx WHERE xx = xx");
+    out.showText("DELETE * FROM xxx");
+    out.showText(" ");
+    out.showText("Update information in the table:");
+    out.showText("UPDATE xxx SET xx = xx,xx = xx");
+    out.showText("UPDATE xxx SET xx = xx,xx = xx WHERE xx = xx");
+    out.showText(" ");
+    out.showText("Select row to display:");
+    out.showText("Basic order:");
+    out.showText("SELECT xx,xx FROM xxx");
+    out.showText("SELECT * FROM xxx");
+    out.showText("Keyword support:");
+    out.showText("DISTINCT");
+    out.showText("ORDER BY xxx ASC|DESC");
+    out.showText("WHERE xx = xx");
+    out.showText("TO filename");
+    out.showText("MAX xx");
+    out.showText(" ");
 }
 
 vector<string> Process::splitBySpace(string& s) {
@@ -340,8 +384,8 @@ bool Process::isLegal(string& order) {
        }
     } else if (result[0] == "SELECT") {
        auto ite = std::find(result.begin(), result.end(), "FROM");
-       string name, columns, cols, vals, orderCols, whatOrder, filename;
-       bool distinct = false, order = false, where = false, to = false;
+       string name, columns, cols, vals, orderCols, whatOrder, filename, maxCol;
+       bool distinct = false, order = false, where = false, to = false, max = false;
        if (ite == result.end()) {
            return false;
        } else
@@ -388,6 +432,15 @@ bool Process::isLegal(string& order) {
            filename = *(ite + 1);
            to = true;
        }
+       // search for key word "MAX"
+       ite = std::find(result.begin(), result.end(), "MAX");
+       if (ite == result.end())
+           max = false;
+       else {
+           max = true;
+           maxCol = *(ite + 1);
+       }
+       return true;
     } else if (result[0] == "UPDATE") {
        string name = result[1];
        if (result[2] != "SET") {
@@ -414,19 +467,23 @@ bool Process::isLegal(string& order) {
     return flag;
 }
 
-void Process::performOrder(string& order) {
+bool Process::performOrder(string& order) {
     bool flag;
     Output out;
     vector<string> result = splitBySpace(order);
+    if (result[0] == "HELP") {
+        showLegalOrder();
+        return true;
+    }
     if (result.size() < 2) {
         out.showText("Unknown order!");
-        return;
+        return false;
     }
     if (result[0] == "CREATE" && result[1] == "TABLE") {
         // create table family
         if (result.size() != 5 && result.size() != 6) {
             out.showText("Unknown order!");
-            return;
+            return false;
         }
         int count = 2;
         string name = result[count++];
@@ -436,7 +493,7 @@ void Process::performOrder(string& order) {
             string filename = result[count++];
             if (count != result.size()) {
                 out.showText("Unknown order!");
-                return;
+                return false;
             }
             createTableFromFile(name, filename);
             flag = true;
@@ -445,18 +502,18 @@ void Process::performOrder(string& order) {
             string filename = result[count++];
             if (count != result.size()) {
                 out.showText("Unknown order!");
-                return;
+                return false;
             }
             createTableToFile(name, columns, filename);
             flag = true;
         } else {
             out.showText("Unknown order!");
-            return;
+            return false;
         }
     } else if (result[0] == "DROP" && result[1] == "TABLE") {
         if (result.size() == 2) {
             out.showText("Unknown order!");
-            return;
+            return false;
         }
         dropTable(result[2]);
         flag = true;
@@ -467,7 +524,7 @@ void Process::performOrder(string& order) {
     } else if (result[0] == "INSERT" && result[1] == "INTO") {
         if (result.size() != 5 && result.size() != 6) {
             out.showText("Unknown order!");
-            return;
+            return false;
         }
         string name = result[2];
         if (result[3] == "VALUES" && result.size() == 5) {
@@ -482,7 +539,7 @@ void Process::performOrder(string& order) {
             flag = true;
         } else {
             out.showText("Unknown order!");
-            return;
+            return false;
         }
     } else if (result[0] == "DELETE") {
         if (result[1] == "FROM" && result.size() == 7 && result[3] == "WHERE" && result[5] == "=") {
@@ -499,11 +556,11 @@ void Process::performOrder(string& order) {
         }
     } else if (result[0] == "SELECT") {
         auto ite = std::find(result.begin(), result.end(), "FROM");
-        string name, columns, cols, vals, orderCols, whatOrder, filename;
-        bool distinct = false, order = false, where = false, to = false;
+        string name, columns, cols, vals, orderCols, whatOrder, filename, maxCol;
+        bool distinct = false, order = false, where = false, to = false, max = false;
         if (ite == result.end()) {
             out.showText("Unknown order!");
-            return;
+            return false;
         } else
             name = *(ite + 1);
         ite = std::find(result.begin(), result.end(), "DISTINCT");
@@ -521,7 +578,7 @@ void Process::performOrder(string& order) {
         else {
             if (*(ite + 1) != "BY") {
                 out.showText("Unknown order!");
-                return;
+                return false;
             } else {
                 order = true;
                 orderCols = *(ite + 2);
@@ -535,7 +592,7 @@ void Process::performOrder(string& order) {
         else {
             if (*(ite + 2) != "=") {
                 out.showText("Unknown order!");
-                return;
+                return false;
             } else {
                 cols = *(ite + 1);
                 vals = *(ite + 3);
@@ -550,13 +607,21 @@ void Process::performOrder(string& order) {
             filename = *(ite + 1);
             to = true;
         }
+        // search for key word "MAX"
+       ite = std::find(result.begin(), result.end(), "MAX");
+       if (ite == result.end())
+           max = false;
+       else {
+           max = true;
+           maxCol = *(ite + 1);
+       }
         // now process
         vector<vector<string> > result;
         if (columns == "*") {
             result = selectAll(name);
             if (result.size() == 0) {
                 out.showText("No match!");
-                return;
+                return false;
             }
             flag = true;
         }
@@ -564,7 +629,7 @@ void Process::performOrder(string& order) {
             result = selectPart(name, columns);
             if (result.size() == 0) {
                 out.showText("No match!");
-                return;
+                return false;
             }
             flag = true;
         }
@@ -572,7 +637,7 @@ void Process::performOrder(string& order) {
             result = distinctIt(name, result);
             if (result.size() == 0) {
                 out.showText("No match!");
-                return;
+                return false;
             }
             flag = true;
         }
@@ -580,7 +645,7 @@ void Process::performOrder(string& order) {
             result = orderIt(name, result, whatOrder, orderCols);
             if (result.size() == 0) {
                 out.showText("No match!");
-                return;
+                return false;
             }
             flag = true;
         }
@@ -588,9 +653,18 @@ void Process::performOrder(string& order) {
             result = findRequire(name, result, cols, vals);
             if (result.size() == 0) {
                 out.showText("No match!");
-                return;
+                return false;
             }
             flag = true;
+        }
+        if (max) {
+            result = findMax(name, result, maxCol);
+            if (result.size() != 0)
+                flag = true;
+            else {
+                out.showText("No match!");
+                return false;
+            }
         }
         out.showTable(result);
         if (to) {
@@ -601,7 +675,7 @@ void Process::performOrder(string& order) {
         string name = result[1];
         if (result[2] != "SET") {
             out.showText("Unknown order!");
-            return;
+            return false;
         }
         bool where = false;
         string cols, vals;
@@ -612,7 +686,7 @@ void Process::performOrder(string& order) {
         else {
             if (*(ite + 2) != "=") {
                 out.showText("Unknown order!");
-                return;
+                return false;
             } else {
                 cols = *(ite + 1);
                 vals = *(ite + 3);
@@ -625,7 +699,7 @@ void Process::performOrder(string& order) {
         vector<string> values;
         if (!updateProcess(columns, values, result, 3, end)) {
             out.showText("Unknown order!");
-            return;
+            return false;
         }
         if (where) {
             if(!update(name, columns, values, cols, vals))
@@ -640,16 +714,17 @@ void Process::performOrder(string& order) {
     } else if (result[0] == "USE" && result[1] == "FILE") {
         if (result.size() != 3) {
             out.showText("Unknown order!");
-            return;
+            return false;
         }
         string filename = result[2];
         File infile(filename);
         vector<string> orders = infile.readLineByLine();
         doWhatFileSays(orders);
+        flag = true;
     } else
         if (!flag)
             out.showText("Unknown Order!");
-
+    return flag;
 }
 
 void Process::doWhatFileSays(vector<string>& orders) {
@@ -684,6 +759,8 @@ void Process::applicationOn() {
         s = in.getString();
         if (s == "quit")
             break;
-        performOrder(s);
+        if (!performOrder(s)) {
+            out.showText("Type\"HELP\" to get help");
+        }
     }
 }

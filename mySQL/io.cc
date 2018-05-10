@@ -63,19 +63,24 @@ vector<vector<string> > File::readTable() {
         infile.close();
         return table;
     }
-    char s[MAXSIZE];
-    infile.getline(s, MAXSIZE);
-    int size = firstLine.size(), count = 0;
-    string buffer;
+    char buffer[MAXSIZE];
+    infile.getline(buffer, MAXSIZE);
+    int size = firstLine.size();
     vector<string> oneLine;
-    while(infile >> buffer) {
-        oneLine.push_back(buffer);
-        count++; // count is the number of information in this line
-        if(count == size) {
+    while(infile.getline(buffer, MAXSIZE)) {
+        char *s = nullptr;
+        char delim[] = {" "};
+        s = strtok(buffer, delim);
+        while(s!=nullptr) {
+            string temp(s);
+            oneLine.push_back(temp);
+            s = strtok(nullptr, delim);
+    }
+
+        if(oneLine.size() <= size) {
             // this line is finished
             table.push_back(oneLine);
             oneLine.clear();
-            count = 0;
         }
     }
     infile.clear();
