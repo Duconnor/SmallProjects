@@ -1,0 +1,1 @@
+/Library/Developer/CommandLineTools/usr/bin/c++  -g -Wl,-search_paths_first -Wl,-headerpad_max_install_names  CMakeFiles/Reversi.dir/main.cpp.o CMakeFiles/Reversi.dir/Reversi.cpp.o CMakeFiles/Reversi.dir/Board.cpp.o CMakeFiles/Reversi.dir/ClientSocket.cpp.o  -o Reversi 
