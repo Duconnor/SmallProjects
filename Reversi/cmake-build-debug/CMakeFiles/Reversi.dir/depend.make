@@ -3,6 +3,7 @@
 
 CMakeFiles/Reversi.dir/Board.cpp.o: ../Board.cpp
 CMakeFiles/Reversi.dir/Board.cpp.o: ../Board.h
+CMakeFiles/Reversi.dir/Board.cpp.o: ../Define.h
 
 CMakeFiles/Reversi.dir/ClientSocket.cpp.o: ../ClientSocket.cpp
 CMakeFiles/Reversi.dir/ClientSocket.cpp.o: ../ClientSocket.h

@@ -1,5 +1,7 @@
 #include "Board.h"
+#include "Define.h"
 #include <fstream>
+#include <functional>
 
 int valueList[ROW][COL] = {{90,  -60, 10, 10, 10, 10, -60, 90},
                            {-60, -80, 5,  5,  5,  5,  -80, -60},
@@ -9,6 +11,28 @@ int valueList[ROW][COL] = {{90,  -60, 10, 10, 10, 10, -60, 90},
                            {10,  5,   1,  1,  1,  1,  5,   10},
                            {-60, -80, 5,  5,  5,  5,  -80, -60},
                            {90,  -60, 10, 10, 10, 10, -60, 90}};
+
+namespace std {
+    template<>
+    struct hash<Board> {
+        size_t operator()(const Board &board) const {
+            size_t seed = 0;
+            for (int i = 0; i < ROW; i++)
+                for (int j = 0; j < COL; j++) {
+                    std::__hash_combine(seed, hash<bool>()(board.at(i, j).valid));
+                    std::__hash_combine(seed, hash<bool>()(board.at(i, j).occupy));
+                    int color = 1;
+                    if (board.at(i, j).chessman.color == black)
+                        color = 0;
+                    std::__hash_combine(seed, hash<int>()(color));
+                }
+            return seed;
+        }
+    };
+}
+
+
+unordered_map<Board, std::pair<int, int>> transportationTable;
 
 bool Board::isPossible(int row, int col, int color) {
     if (board[row][col].occupy || !board[row][col].valid)
@@ -130,6 +154,7 @@ bool Board::isFlippable(int row, int col, int color, bool flip) {
 }
 
 Board::Board() {
+    roundCount = 0;
     board[3][3].occupy = true;
     board[3][3].chessman.setColor(0);
     board[3][4].occupy = true;
@@ -140,7 +165,8 @@ Board::Board() {
     board[4][4].chessman.setColor(0);
 }
 
-Board::Board(Board &thatBoard) {
+Board::Board(const Board &thatBoard) {
+    roundCount = thatBoard.roundCount;
     for (int i = 0; i < ROW; i++)
         for (int j = 0; j < COL; j++)
             board[i][j] = thatBoard.board[i][j];
@@ -161,6 +187,8 @@ void Board::clear() {
     board[4][3].chessman.setColor(1);
     board[4][4].occupy = true;
     board[4][4].chessman.setColor(0);
+    transportationTable.clear();
+    roundCount = 0;
 }
 
 void Board::clearRestricted() {
@@ -206,30 +234,43 @@ vector<std::pair<int, int>> Board::allPossibleMoves(int color) {
     return result;
 }
 
-void Board::writeToFile(char *filename) {
-}
-
-Board &Board::operator=(Board const &that) {
+Board &Board::operator=(const Board &that) {
     for (int i = 0; i < ROW; i++)
         for (int j = 0; j < COL; j++)
             board[i][j] = that.board[i][j];
     return *this;
 }
 
+bool Board::operator==(const Board &that) const {
+    for (int i = 0; i < ROW; i++)
+        for (int j = 0; j < COL; j++)
+            if (!(board[i][j] == that.board[i][j]))
+                return false;
+    return color == that.color;
+}
+
 int Board::calculateValue() {
+    Color myColor = black;
+    if (color == 1)
+        myColor = white;
     int sum = 0;
     for (int i = 0; i < ROW; i++)
         for (int j = 0; j < COL; j++)
-            if (board[i][j].occupy)
-                sum += valueList[i][j];
+            if (board[i][j].occupy) {
+                if (board[i][j].chessman.color == myColor)
+                    sum += valueList[i][j];
+                else
+                    sum -= valueList[i][j];
+            }
     return sum;
 }
 
-void Board::printOut(bool end, bool start) {
+void Board::printOut(bool end, bool start) const {
     std::ofstream outfile("record.txt", std::ios::app);
     if (start)
         outfile << "new game start!" << std::endl;
     else {
+        outfile << "step No." << roundCount << std::endl;
         if (!end) {
             for (int i = 0; i < ROW; i++) {
                 for (int j = 0; j < COL; j++) {
@@ -256,62 +297,167 @@ void Board::printOut(bool end, bool start) {
     outfile.close();
 }
 
-int minMaxSearch(bool player, Board &board, int alpha, int beta, int depth, int color, int &returnRow, int &returnCol) {
+int Algorithm::minMaxSearch(bool player, Board &board, int alpha, int beta, int depth, int color, int &returnRow,
+                            int &returnCol) {
     // @param: player -> false for opponent's move, true for my move
     // @parm: alpha is initialed to the min value of int, beta is initialed to max value of int
-    if (depth == 0)
-        return board.calculateValue();
-    if (player) {
-        vector<std::pair<int, int>> allMoves = board.allPossibleMoves(color);
-        for (auto pair:allMoves) {
-            Board temp(board);
-            temp.placeChessman(pair.first, pair.second, color);
-            int temp1 = 0, temp2 = 0;
-            int val = minMaxSearch(!player, temp, alpha, beta, depth - 1, color ^ 1, temp1,
-                                   temp2);
-            if (val > alpha) {
-                alpha = val;
-                returnRow = pair.first;
-                returnCol = pair.second;
-            }
-            if (alpha > beta)
-                return alpha;
+    if (depth != SEARCHDEPTH) {
+        auto ite = transportationTable.find(board);
+        if (ite != transportationTable.end()) {
+            if (ite->second.first >= beta)
+                return ite->second.first; // lower bound is greater than beta
+            if (ite->second.second <= alpha) // upper bound is less than alpha
+                return ite->second.second;
+            if (ite->second.first >= alpha)
+                alpha = ite->second.first;
+            if (ite->second.second <= beta)
+                beta = ite->second.second;
         }
-        return alpha;
-    } else {
-        vector<std::pair<int, int>> allMoves = board.allPossibleMoves(color);
-        for (auto pair:allMoves) {
-            Board temp(board);
-            temp.placeChessman(pair.first, pair.second, color);
-            int temp1 = 0, temp2 = 0;
-            int val = minMaxSearch(player, board, alpha, beta, depth - 1, color ^ 1, temp1,
-                                   temp2);
-            if (val < beta) {
-                beta = val;
-                returnRow = pair.first;
-                returnCol = pair.second;
-            }
-            if (beta < alpha)
-                return beta;
-        }
-        return beta;
     }
+    int result = 0;
+    if (depth == 0)
+        result = board.calculateValue();
+    else if (player) {
+        result = INT32_MIN;
+        int tempAlpha = alpha;
+        vector<std::pair<int, int>> allMoves = board.allPossibleMoves(color);
+        if (allMoves.empty()) {
+            Board temp(board);
+            temp.clearRestricted();
+            allMoves = temp.allPossibleMoves(color ^ 1);
+            if (!allMoves.empty()) {
+                int temp1 = 0, temp2 = 0;
+                int val = minMaxSearch(!player, temp, tempAlpha, beta, depth - 1, color ^ 1, temp1, temp2);
+                if (val > result)
+                    result = val;
+            }
+        } else {
+            bool setFlag = false;
+            for (auto pair:allMoves) {
+                /*Board temp(board);
+                temp.placeChessman(pair.first, pair.second, color);
+                int temp1 = 0, temp2 = 0;
+                int val = minMaxSearch(!player, temp, alpha, beta, depth - 1, color ^ 1, temp1,
+                                       temp2);
+                if (val > alpha) {
+                    alpha = val;
+                    returnRow = pair.first;
+                    returnCol = pair.second;
+                }
+                if (alpha > beta)
+                    return alpha;*/
+                if ((pair.first == 0 && pair.second == 0) || (pair.first == 7 && pair.second == 0) ||
+                    (pair.first == 0 && pair.second == 7) || (pair.first == 7 && pair.second == 7)) {
+                    returnRow = pair.first;
+                    returnCol = pair.second;
+                    break;
+                }
+                if (result >= beta)
+                    break; // cut happens
+                Board temp(board);
+                temp.placeChessman(pair.first, pair.second, color);
+                int temp1 = 0, temp2 = 0;
+                int val = minMaxSearch(!player, temp, tempAlpha, beta, depth - 1, color ^ 1, temp1, temp2);
+                if (val > result) {
+                    result = val;
+                    returnRow = pair.first;
+                    returnCol = pair.second;
+                }
+                if (result > tempAlpha)
+                    tempAlpha = result;
+            }
+        }
+        // return alpha;
+    } else {
+        result = INT32_MAX;
+        int tempBeta = beta;
+        vector<std::pair<int, int>> allMoves = board.allPossibleMoves(color);
+        if (allMoves.empty()) {
+            Board temp(board);
+            temp.clearRestricted();
+            allMoves = temp.allPossibleMoves(color ^ 1);
+            if (!allMoves.empty()) {
+                int temp1 = 0, temp2 = 0;
+                int val = minMaxSearch(player, temp, alpha, tempBeta, depth - 1, color ^ 1, temp1, temp2);
+                if (val < result)
+                    result = val;
+            }
+        } else {
+            for (auto pair:allMoves) {
+                /*Board temp(board);
+                temp.placeChessman(pair.first, pair.second, color);
+                int temp1 = 0, temp2 = 0;
+                int val = minMaxSearch(player, board, alpha, beta, depth - 1, color ^ 1, temp1,
+                                       temp2);
+                if (val < beta) {
+                    beta = val;
+                    returnRow = pair.first;
+                    returnCol = pair.second;
+                }
+                if (beta < alpha)
+                    return beta;*/
+                if (result <= alpha)
+                    break; // cut happens
+                Board temp(board);
+                temp.placeChessman(pair.first, pair.second, color);
+                int temp1 = 0, temp2 = 0;
+                int val = minMaxSearch(player, temp, alpha, tempBeta, depth - 1, color ^ 1, temp1, temp2);
+                if (val < result) {
+                    result = val;
+                    returnRow = pair.first;
+                    returnCol = pair.second;
+                }
+                if (result < tempBeta)
+                    tempBeta = result;
+            }
+        }
+        // return beta;
+    }
+
+    // update transportation table
+    // upper bound known
+    if (result <= alpha) {
+        std::pair<int, int> valuePair(INT32_MIN, result);
+        std::pair<Board, std::pair<int, int>> newPair(board, valuePair);
+        auto pair = transportationTable.insert(newPair);
+        if (!pair.second)
+            transportationTable[board].second = result;
+    }
+    // accurate min max value
+    if (result > alpha && result < beta) {
+        std::pair<int, int> valuePair(result, result);
+        std::pair<Board, std::pair<int, int>> newPair(board, valuePair);
+        auto pair = transportationTable.insert(newPair);
+        if (!pair.second) {
+            transportationTable[board].second = result;
+            transportationTable[board].first = result;
+        }
+    }
+    // lower bound known
+    if (result > beta) {
+        std::pair<int, int> valuePair(result, INT32_MAX);
+        std::pair<Board, std::pair<int, int>> newPair(board, valuePair);
+        auto pair = transportationTable.insert(newPair);
+        if (!pair.second)
+            transportationTable[board].first = result;
+    }
+    return result;
 }
 
-int MTD_f(bool player, Board &board, int &returnRow, int &returnCol, int guessVal, int color) {
+int Algorithm::MTD_f(bool player, Board &board, int &returnRow, int &returnCol, int guessVal, int color) {
     int val = guessVal;
-    int upperbond = INT32_MAX, lowerbond = INT32_MIN;
-    while (lowerbond < upperbond) {
+    int upperbound = INT32_MAX, lowerbound = INT32_MIN;
+    while (lowerbound < upperbound) {
         int beta = 0;
-        if (val == lowerbond)
+        if (val == lowerbound)
             beta = val + 1;
         else
             beta = val;
         val = minMaxSearch(player, board, beta - 1, beta, SEARCHDEPTH, color, returnRow, returnCol);
         if (val < beta)
-            upperbond = val;
+            upperbound = val;
         else
-            lowerbond = val;
+            lowerbound = val;
     }
     return val;
 }

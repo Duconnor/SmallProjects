@@ -21,6 +21,7 @@ private:
     int oppositeColor;
     char lastmsg[16];
     Board board;
+    Algorithm algorithm;
 public:
     Reversi();
     ~Reversi();

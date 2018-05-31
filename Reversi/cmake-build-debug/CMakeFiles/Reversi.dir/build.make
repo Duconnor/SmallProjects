@@ -81,33 +81,9 @@ CMakeFiles/Reversi.dir/main.cpp.o.provides: CMakeFiles/Reversi.dir/main.cpp.o.re
 CMakeFiles/Reversi.dir/main.cpp.o.provides.build: CMakeFiles/Reversi.dir/main.cpp.o
 
 
-CMakeFiles/Reversi.dir/Reversi.cpp.o: CMakeFiles/Reversi.dir/flags.make
-CMakeFiles/Reversi.dir/Reversi.cpp.o: ../Reversi.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/duyx/CLionProjects/Reversi/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/Reversi.dir/Reversi.cpp.o"
-	/Library/Developer/CommandLineTools/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Reversi.dir/Reversi.cpp.o -c /Users/duyx/CLionProjects/Reversi/Reversi.cpp
-
-CMakeFiles/Reversi.dir/Reversi.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Reversi.dir/Reversi.cpp.i"
-	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/duyx/CLionProjects/Reversi/Reversi.cpp > CMakeFiles/Reversi.dir/Reversi.cpp.i
-
-CMakeFiles/Reversi.dir/Reversi.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Reversi.dir/Reversi.cpp.s"
-	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/duyx/CLionProjects/Reversi/Reversi.cpp -o CMakeFiles/Reversi.dir/Reversi.cpp.s
-
-CMakeFiles/Reversi.dir/Reversi.cpp.o.requires:
-
-.PHONY : CMakeFiles/Reversi.dir/Reversi.cpp.o.requires
-
-CMakeFiles/Reversi.dir/Reversi.cpp.o.provides: CMakeFiles/Reversi.dir/Reversi.cpp.o.requires
-	$(MAKE) -f CMakeFiles/Reversi.dir/build.make CMakeFiles/Reversi.dir/Reversi.cpp.o.provides.build
-.PHONY : CMakeFiles/Reversi.dir/Reversi.cpp.o.provides
-
-CMakeFiles/Reversi.dir/Reversi.cpp.o.provides.build: CMakeFiles/Reversi.dir/Reversi.cpp.o
-
-
 CMakeFiles/Reversi.dir/Board.cpp.o: CMakeFiles/Reversi.dir/flags.make
 CMakeFiles/Reversi.dir/Board.cpp.o: ../Board.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/duyx/CLionProjects/Reversi/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/Reversi.dir/Board.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/duyx/CLionProjects/Reversi/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/Reversi.dir/Board.cpp.o"
 	/Library/Developer/CommandLineTools/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Reversi.dir/Board.cpp.o -c /Users/duyx/CLionProjects/Reversi/Board.cpp
 
 CMakeFiles/Reversi.dir/Board.cpp.i: cmake_force
@@ -127,6 +103,30 @@ CMakeFiles/Reversi.dir/Board.cpp.o.provides: CMakeFiles/Reversi.dir/Board.cpp.o.
 .PHONY : CMakeFiles/Reversi.dir/Board.cpp.o.provides
 
 CMakeFiles/Reversi.dir/Board.cpp.o.provides.build: CMakeFiles/Reversi.dir/Board.cpp.o
+
+
+CMakeFiles/Reversi.dir/Reversi.cpp.o: CMakeFiles/Reversi.dir/flags.make
+CMakeFiles/Reversi.dir/Reversi.cpp.o: ../Reversi.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/duyx/CLionProjects/Reversi/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/Reversi.dir/Reversi.cpp.o"
+	/Library/Developer/CommandLineTools/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Reversi.dir/Reversi.cpp.o -c /Users/duyx/CLionProjects/Reversi/Reversi.cpp
+
+CMakeFiles/Reversi.dir/Reversi.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Reversi.dir/Reversi.cpp.i"
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/duyx/CLionProjects/Reversi/Reversi.cpp > CMakeFiles/Reversi.dir/Reversi.cpp.i
+
+CMakeFiles/Reversi.dir/Reversi.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Reversi.dir/Reversi.cpp.s"
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/duyx/CLionProjects/Reversi/Reversi.cpp -o CMakeFiles/Reversi.dir/Reversi.cpp.s
+
+CMakeFiles/Reversi.dir/Reversi.cpp.o.requires:
+
+.PHONY : CMakeFiles/Reversi.dir/Reversi.cpp.o.requires
+
+CMakeFiles/Reversi.dir/Reversi.cpp.o.provides: CMakeFiles/Reversi.dir/Reversi.cpp.o.requires
+	$(MAKE) -f CMakeFiles/Reversi.dir/build.make CMakeFiles/Reversi.dir/Reversi.cpp.o.provides.build
+.PHONY : CMakeFiles/Reversi.dir/Reversi.cpp.o.provides
+
+CMakeFiles/Reversi.dir/Reversi.cpp.o.provides.build: CMakeFiles/Reversi.dir/Reversi.cpp.o
 
 
 CMakeFiles/Reversi.dir/ClientSocket.cpp.o: CMakeFiles/Reversi.dir/flags.make
@@ -156,16 +156,16 @@ CMakeFiles/Reversi.dir/ClientSocket.cpp.o.provides.build: CMakeFiles/Reversi.dir
 # Object files for target Reversi
 Reversi_OBJECTS = \
 "CMakeFiles/Reversi.dir/main.cpp.o" \
-"CMakeFiles/Reversi.dir/Reversi.cpp.o" \
 "CMakeFiles/Reversi.dir/Board.cpp.o" \
+"CMakeFiles/Reversi.dir/Reversi.cpp.o" \
 "CMakeFiles/Reversi.dir/ClientSocket.cpp.o"
 
 # External object files for target Reversi
 Reversi_EXTERNAL_OBJECTS =
 
 Reversi: CMakeFiles/Reversi.dir/main.cpp.o
-Reversi: CMakeFiles/Reversi.dir/Reversi.cpp.o
 Reversi: CMakeFiles/Reversi.dir/Board.cpp.o
+Reversi: CMakeFiles/Reversi.dir/Reversi.cpp.o
 Reversi: CMakeFiles/Reversi.dir/ClientSocket.cpp.o
 Reversi: CMakeFiles/Reversi.dir/build.make
 Reversi: CMakeFiles/Reversi.dir/link.txt
@@ -178,8 +178,8 @@ CMakeFiles/Reversi.dir/build: Reversi
 .PHONY : CMakeFiles/Reversi.dir/build
 
 CMakeFiles/Reversi.dir/requires: CMakeFiles/Reversi.dir/main.cpp.o.requires
-CMakeFiles/Reversi.dir/requires: CMakeFiles/Reversi.dir/Reversi.cpp.o.requires
 CMakeFiles/Reversi.dir/requires: CMakeFiles/Reversi.dir/Board.cpp.o.requires
+CMakeFiles/Reversi.dir/requires: CMakeFiles/Reversi.dir/Reversi.cpp.o.requires
 CMakeFiles/Reversi.dir/requires: CMakeFiles/Reversi.dir/ClientSocket.cpp.o.requires
 
 .PHONY : CMakeFiles/Reversi.dir/requires

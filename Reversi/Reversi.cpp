@@ -11,10 +11,10 @@
 #define random(x) (rand()%x)
 #define ROWS 8
 #define COLS 8
-#define ROUNDS 3
+#define ROUNDS 10
 
 Reversi::Reversi() {
-    client_socket = ClientSocket();
+    // client_socket = ClientSocket();
     oppositeColor = ownColor = -1;
     board = Board();
 }
@@ -88,6 +88,7 @@ void Reversi::roundStart(int round) {
         // this client : black chessman
         case 'B':
             ownColor = 0;
+            board.setColor(ownColor);
             oppositeColor = 1;
             rtn = client_socket.sendMsg("BB");
             printf("Send BB -> rtn: %d\n", rtn);
@@ -95,6 +96,7 @@ void Reversi::roundStart(int round) {
             break;
         case 'W':
             ownColor = 1;
+            board.setColor(ownColor);
             oppositeColor = 0;
             rtn = client_socket.sendMsg("BW");
             printf("Send BW -> rtn: %d\n", rtn);
@@ -124,6 +126,7 @@ void Reversi::oneRound() {
 
                 if (observe() >= 1) break;    // see white move
                 STEP++;
+                board.roundCount++;
                 saveChessBoard();
             }
             printf("One Round End\n");
@@ -140,6 +143,7 @@ void Reversi::oneRound() {
 
                 if (observe() >= 1) break;     // receive RET Code
                 saveChessBoard();
+                board.roundCount++;
                 STEP++;
             }
             printf("One Round End\n");
@@ -301,8 +305,9 @@ void Reversi::generateOneStepMessage(int row, int col) {
 pair<int, int> Reversi::step() {
     //此处写算法
     int row = -1, col = -1;
-    minMaxSearch(true, board, INT32_MIN, INT32_MAX, SEARCHDEPTH, ownColor, row, col);
-    MTD_f(true, board, row, col, 600, ownColor);
+//    algorithm.minMaxSearch(true, board, INT32_MIN, INT32_MAX, algorithm.SEARCHDEPTH, ownColor, row, col);
+    int guessVal = algorithm.minMaxSearch(true, board, INT32_MIN, INT32_MAX, algorithm.SEARCHDEPTH, ownColor, row, col);
+    //algorithm.MTD_f(true, board, row, col, board.calculateValue(), ownColor);
     return make_pair(row, col);
 }
 
