@@ -1,5 +1,6 @@
-#include "calculator.h"
-#include <iostream>
+#define TEST 0
+#if TEST == 1
+#include "console.h"
 
 // unit test for class Complex
 /*
@@ -28,19 +29,28 @@ int main() {
 
 // unit test for class Calculator
 
+/*
 int main() {
     string s;
     while (std::getline(std::cin, s)) {
         Calculator calculator(s);
-        /*
         calculator.checkError();
         vector<string> log = calculator.getErrorLog();
         std::cout << calculator.getExpression() << std::endl;
         for (auto s: log)
             std::cout << s << std::endl;
-            */
         Complex res = calculator.calculate();
         std::cout << res.toString() << std::endl;
     }
     return 0;
 }
+*/
+
+// unit test for class Console
+
+
+int main() {
+  Console console;
+  console.start();
+}
+#endif

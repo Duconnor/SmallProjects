@@ -33,7 +33,7 @@ string Calculator::toPostfix() {
                     result.push_back(newOperator);
                     operatorStack.pop();
                 }
-            } else if (thisOperator == 'm' || thisOperator == 'c' || thisOperator == 'a'){
+            } else if (thisOperator == 'm' || thisOperator == 'c' || thisOperator == 'a' || thisOperator == '@'){
                 while (!operatorStack.empty()) {
                     char newOperator = operatorStack.top();
                     if (newOperator == 'm' || newOperator == 'a' || newOperator == 'c') {
@@ -46,7 +46,7 @@ string Calculator::toPostfix() {
             } else if (thisOperator == '^') {
                 while (!operatorStack.empty()) {
                     char newOperator = operatorStack.top();
-                    if (newOperator == 'm' || newOperator == 'c' || newOperator == 'a' || newOperator == '^') {
+                    if (newOperator == 'm' || newOperator == 'c' || newOperator == 'a' || newOperator == '^' || newOperator == '@') {
                         result.push_back(newOperator);
                         operatorStack.pop();
                     } else
@@ -57,7 +57,7 @@ string Calculator::toPostfix() {
                 while (!operatorStack.empty()) {
                     char newOperator = operatorStack.top();
                     if (newOperator == 'm' || newOperator == 'c' || newOperator == 'a' || newOperator == '^' ||
-                            newOperator == '*' || newOperator == '/') {
+                            newOperator == '*' || newOperator == '/' || newOperator == '@') {
                         result.push_back(newOperator);
                         operatorStack.pop();
                     } else
@@ -68,7 +68,7 @@ string Calculator::toPostfix() {
                 while (!operatorStack.empty()) {
                     char newOperator = operatorStack.top();
                     if (newOperator == 'm' || newOperator == 'c' || newOperator == 'a' || newOperator == '^' ||
-                            newOperator == '*' || newOperator == '/' || newOperator == '+' || newOperator == '-') {
+                            newOperator == '*' || newOperator == '/' || newOperator == '+' || newOperator == '-' || newOperator == '@') {
                         result.push_back(newOperator);
                         operatorStack.pop();
                     } else
@@ -126,7 +126,7 @@ Complex Calculator::calculatePostfix() {
                 Complex result;
                 if (present == '^')
                     result = operandLeft.power(operandRight);
-                else if (present == '*')
+                else if (present == '*' || present == '@')
                     result = operandLeft * operandRight;
                 else if (present == '/')
                     result = operandLeft / operandRight;
@@ -351,7 +351,7 @@ bool Calculator::isIValid() {
             // check after
             if(i != length - 1) {
                 char after = expression[i + 1];
-                if (after == ')' || isOperator(after))
+                if (after == ')' || isOperator(after) || after == '^')
                     continue;
                 if (after == '|' && !evenMod)
                     continue;
@@ -447,6 +447,29 @@ bool Calculator::checkError() {
     return flag1 && flag2 && flag3 && flag4 && flag5 && flag6 && flag7 && flag8;
 }
 
+bool Calculator::checkBracket() {
+    stack<char> bracketStack;
+    for (int i = 0; i < expression.length(); i++) {
+        char present = expression[i];
+        if (present == '(')
+            bracketStack.push(present);
+        else if (present == ')') {
+            if (bracketStack.empty()) {
+                string errorLog = std::to_string(i) + ",Bracket left less error";
+                log.push_back(errorLog);
+                return false;
+            } else
+                bracketStack.pop();
+        }
+    }
+    if (bracketStack.empty())
+        return true;
+    else {
+        string errorLog = "-1,Bracket left equal right error";
+        return false;
+    }
+}
+
 vector<string> Calculator::getErrorLog() {
     return log;
 }
@@ -481,6 +504,7 @@ bool Calculator::preprocess() {
             presentString = generateNext(presentString);
             i = j - 1;
         } else if (present == 'i') {
+            int beforeBracket = -1;
             if (!isRealNumber(i)) {
                 string errorLog = std::to_string(i) + ",Not a real number before i";
                 log.push_back(errorLog);
@@ -493,7 +517,7 @@ bool Calculator::preprocess() {
             if (i == 0 || isOperator(expression[i - 1]))
                 result = result + presentString;
             else
-                result = result + "*" + presentString;
+                result = result + "@" + presentString;
             presentString = generateNext(presentString);
         } else if (present == 'a' || present == 'c') {
             result.push_back(present);
@@ -519,8 +543,9 @@ bool Calculator::preprocess() {
 Complex Calculator::calculate() {
     bool flag1 = checkError();
     bool flag2 = preprocess();
+    bool flag3 = checkBracket();
     Complex result;
-    if (!flag1 || !flag2)
+    if (!flag1 || !flag2 || !flag3)
         return result;
     else {
         string postfix = toPostfix();

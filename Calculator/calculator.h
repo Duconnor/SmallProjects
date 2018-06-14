@@ -46,6 +46,7 @@ public:
     bool isLeftBracketValid();
     bool isRightBracketValid();
     bool checkError();
+    bool checkBracket();
 
     vector<string> getErrorLog();
     string getExpression() {return expression;};

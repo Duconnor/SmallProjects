@@ -1,6 +1,6 @@
 CXX = g++
 CXXFLAGS = -g -std=c++11
-BIN = calculator
+BIN = myCalculator
 
 SRC = $(wildcard *.cc)
 OBJ = $(SRC:%.cc=%.o)
