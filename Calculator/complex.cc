@@ -146,6 +146,14 @@ Complex Complex::power(Complex &that) {
     }
 }
 
+Complex Complex::squareRoot() {
+    double real = sqrt((realPart + modulo().realPart) / 2.0);
+    double imag = sqrt((modulo().realPart - realPart) / 2.0);
+    if (imaginaryPart < 0)
+        imag = imag * -1;
+    return Complex(real, imag);
+}
+
 bool Complex::isReal() {
     return imaginaryPart == 0;
 }

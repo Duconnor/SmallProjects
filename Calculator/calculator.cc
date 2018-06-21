@@ -554,3 +554,79 @@ Complex Calculator::calculate() {
         return result;
     }
 }
+
+vector<Complex> Calculator::findRoots(Complex a, Complex b, Complex c) {
+    Complex four(4.0, 0.0);
+    Complex two(2.0, 0.0);
+    Complex delta = b * b - a * c * four; // b^2 - a * 4c
+    Complex negOne(-1.0, 0.0);
+    Complex rootOne = (delta.squareRoot() - b) / (two * a);
+    Complex rootTwo = (negOne * delta.squareRoot() - b) / (two * a);
+    vector<Complex> result;
+    result.push_back(rootOne);
+    result.push_back(rootTwo);
+    return result;
+}
+
+Complex Calculator::toComplex(string s) {
+    double real = 0.0, imag = 0.0;
+    int i = 0, start = 0;
+    if (s[0] == '+' || s[0] == '-') {
+        i++;
+        start++;
+    }
+    bool flag = false;
+    while (i < s.length()) {
+        if (isOperator(s[i])) {
+            string substr = s.substr(start, i - start);
+            real = atof(substr.c_str());
+            if (s[0] == '-')
+                real = real * -1.0;
+            start = i + 1;
+            i = i + 1;
+            flag = true;
+        } else if (s[i] == 'i') {
+            string substr = s.substr(start, i - start);
+            imag = atof(substr.c_str());
+            if (start > 0 && expression[start - 1] == '-')
+                imag = imag * -1.0;
+            flag = true;
+            i++;
+        } else
+            i++;
+    }
+    if (!flag) {
+        // the whole string is a number
+        string substr = s.substr(start, i - start);
+        real = atof(substr.c_str());
+        if (s[0] == '-')
+            real = real * -1.0;
+    }
+    return Complex(real, imag);
+}
+
+vector<Complex> Calculator::solveEquation() {
+    Complex a, b, c;
+    int i = 0, start = 0;
+    while (i <= expression.length()) {
+        while (i < expression.length()) {
+            if (expression[i] != 'i' && isalpha(expression[i]))
+                break;
+            else
+                i++;
+        }
+        if (i == expression.length()) {
+            c = toComplex(expression.substr(start, i - start));
+            break;
+        } else if (expression[i + 1] == '^') {
+            a = toComplex(expression.substr(start, i - start));
+            start = i + 3;
+            i = i + 3;
+        } else {
+            b = toComplex(expression.substr(start, i - start));
+            start = i + 1;
+            i = i + 1;
+        }
+    }
+    return findRoots(a, b, c);
+}

@@ -24,6 +24,8 @@ private:
     bool getPreviousExpression();
     bool getNextExpression();
     vector<string> recentFive();
+    string getSecretExpression(); // read but not display on the screen
+    void controlMode();
 
 public:
     void start();

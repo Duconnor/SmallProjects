@@ -55,6 +55,10 @@ public:
     bool preprocess();
     Complex calculate();
 
+    vector<Complex> findRoots(Complex a, Complex b, Complex c);
+    Complex toComplex(string s);
+    vector<Complex> solveEquation();
+
 };
 
 #endif

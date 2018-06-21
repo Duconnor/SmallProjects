@@ -37,6 +37,7 @@ public:
     Complex conjugate();
     Complex argument();
     Complex power(Complex &that);
+    Complex squareRoot();
 
     bool isReal(); // is this complex number a real number
 

@@ -1,5 +1,7 @@
 #include "console.h"
 #include <string.h>
+#include <unistd.h>
+#include <termios.h>
 #include <iostream>
 
 #define UP "\033[A"
@@ -25,6 +27,8 @@ vector<string> Console::splitBy(char delim, string &s) {
 
 string Console::getExpression() {
     string expression;
+    std::cin.clear();
+    std::cin.sync();
     std::getline(std::cin, expression);
     expressionVector.push_back(expression);
     return expression;
@@ -37,6 +41,7 @@ void Console::calculate(string &expression) {
     if (log.size() == 0)
         std::cout << "The result is: " << result.toString() << std::endl;
     else {
+        expressionVector.pop_back();
         for (auto s: log) {
             vector<string> splitRes = splitBy(',', s);
             vector<int> indexVec;
@@ -110,10 +115,70 @@ vector<string> Console::recentFive() {
     return result;
 }
 
+string Console::getSecretExpression() {
+    struct termios save, current;
+    tcgetattr(0, &save);
+    current = save;
+    current.c_lflag &= ~ICANON;
+    current.c_lflag &= ~ECHO;
+    current.c_cc[VMIN] = 1;
+    current.c_cc[VTIME] = 0;
+    tcsetattr(0, TCSANOW, &current);
+
+    string secretExpression;
+    std::getline(std::cin, secretExpression);
+    tcsetattr(0, TCSANOW, &save);
+    return secretExpression;
+}
+
+void Console::controlMode() {
+    std::cout << "CONTROL MODE ON, TYPE 'quit' TO QUIT " << std::endl;
+    string s = getSecretExpression();
+    bool flag = false;
+    while (s != "quit") {
+        string cal = " ";
+        if (!strcmp(s.c_str(), UP)) {
+            if (expressionVector.size() == 0)
+                std::cout << "Already the first one" << std::endl;
+            else {
+                if (getPreviousExpression()) {
+                    std::cout << presentExpression << std::endl;
+                    cal = getSecretExpression();
+                    if (cal == "") {
+                        calculate(presentExpression);
+                        flag = true;
+                    }
+                } else
+                    std::cout << "Already the first one" << std::endl;
+            }
+        } else if (!strcmp(s.c_str(), DOWN)) {
+            if (expressionVector.size() == 0)
+                std::cout << "Already the last one" << std::endl;
+            else {
+                if (getNextExpression()) {
+                    std::cout << presentExpression << std::endl;
+                    cal = getSecretExpression();
+                    if (cal == "") {
+                        calculate(presentExpression);
+                        flag = true;
+                    }
+                } else
+                    std::cout << "Already the last one" << std::endl;
+            }
+        }
+        if (!strcmp(cal.c_str(), UP) || !strcmp(cal.c_str(), DOWN))
+            s = cal;
+        else
+            s = getSecretExpression();
+    }
+    std::cout << "CONTROL MODE OFF" << std::endl;
+}
+
 void Console::start() {
     string s = getExpression();
     while (s != "quit") {
         if (!strcmp(s.c_str(), UP)) {
+            /*
             expressionVector.pop_back();
             if (expressionVector.size() == 0)
                 std::cout << "Already the first one" << std::endl;
@@ -124,8 +189,10 @@ void Console::start() {
                     std::cout << "Already the first one" << std::endl;
             }
             s = getExpression();
+            */
             continue;
         } else if (!strcmp(s.c_str(), DOWN)) {
+            /*
             expressionVector.pop_back();
             if (expressionVector.size() == 0)
                 std::cout << "Already the last one" << std::endl;
@@ -136,12 +203,27 @@ void Console::start() {
                     std::cout << "Already the last one" << std::endl;
             }
             s = getExpression();
+            */
             continue;
         } else if (s == "recent five") {
             expressionVector.pop_back();
             vector<string> res = recentFive();
             for (auto str: res)
                 std::cout << str << std::endl;
+            s = getExpression();
+            continue;
+        } else if (s == "control mode") {
+            expressionVector.pop_back();
+            controlMode();
+            s = getExpression();
+            continue;
+        } else if (s == "equation mode") {
+            expressionVector.pop_back();
+            std::cout << "Please input the equation: ";
+            s = getExpression();
+            Calculator calculator(s);
+            vector<Complex> res = calculator.solveEquation();
+            std::cout << "first root is: " << res[0].toString() << " ;the second root is: " << res[1].toString() << std::endl;
             s = getExpression();
             continue;
         }
